@@ -1,6 +1,10 @@
 export const levelInit = async () => {
+    const verbose = true
 
-    await import("./routing.js")
+    const routing = await import("./routing.js")
+    const base = routing.init()
 
-    console.log("level initialized")
+    verbose && console.info({level:
+        {base: base}
+    })
 }

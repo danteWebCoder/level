@@ -5,7 +5,5 @@ export const init = () => {
     const baseTag = document.createElement('base')
     baseTag.href = `${window.location.origin}${base}`
     document.head.prepend(baseTag)
-    console.log(`routing: ${base === "" ? "/" : base}`)
+    return(base)
 }
-
-init()
