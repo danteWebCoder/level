@@ -1,14 +1,22 @@
+import * as DOM from "/level/helpers/dom.js"
+
 export const init = () => {
-    const mainBox = document.createElement("div")
-    mainBox.classList.add("landingBox")
+    const mainBox = DOM.add({
+        element: "div",
+        css: ["mainBox"]
+    })
 
-    const whiteBox = document.createElement("section")
-    whiteBox.classList.add("whiteBox")
+    const whiteBox = DOM.add({
+        element: "section",
+        css: ["whiteBox"],
+        box: mainBox
+    })
 
-    const blackBox = document.createElement("section")
-    blackBox.classList.add("blackBox")
+    const blackBox = DOM.add({
+        element: "section",
+        css: ["blackBox"],
+        box: mainBox
+    })
 
-    mainBox.appendChild(whiteBox)
-    mainBox.appendChild(blackBox)
     document.body.appendChild(mainBox)
 }
