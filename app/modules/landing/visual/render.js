@@ -3,6 +3,8 @@ import * as DOM from "/level/helpers/dom.js"
 const fonts = [
     { name: "neuropol", src: "/app/src/fonts/neuropol.otf" },
     { name: "ronduit", src: "/app/src/fonts/ronduitCapitals_Light.woff" },
+    { name: "nasa", src: "/app/src/fonts/nasalization_rg.otf" },
+    { name: "matrix", src: "/app/src/fonts/whitrabt_webfont.woff" },
 ]
 
 const addFontStyle = () => {
@@ -58,22 +60,14 @@ export const init = () => {
     mainBox.innerHTML = `
        <section class="blackBox mainBox">
             <div class="title1 title">Level</div>
+            <div class="title2 title">Modular framework</div>
        </section>
         <section class="whiteBox mainBox">
-            <div class="title2 title">
-                Modular framework
-                <ul class="infoBox">
-                    <li class="counterBox">
-
-                    </li>
-                    <li class="counterBox">
-
-                    </li>
-                    <li class="counterBox">
-
-                    </li>
-                </ul>
-            </div>
+            <ul class="infoBox">
+                <li class="counter">helpers <span id="helperCounter" class="number"></span></li>
+                <li class="counter">animations <span id="animationsCounter" class="number"></span></li>
+                <li class="counter">components <span id="componentsCounter" class="number"></span></li>
+            </ul>
         </section>
     `
 }
