@@ -1,7 +1,7 @@
 const appInit = async () => {
 
     /* level framework */
-    const level = await import("/level/runtime/level_init.js")
+    const level = await import("/framework/runtime/levelInit.js")
     level.levelInit()
 
 

@@ -1,10 +1,10 @@
-import * as DOM from "/level/helpers/dom.js"
+import * as DOM from "/framework/helpers/dom.js"
 
 const fonts = [
     { name: "neuropol", src: "/app/src/fonts/neuropol.otf" },
-    { name: "ronduit", src: "/app/src/fonts/ronduitCapitals_Light.woff" },
+    { name: "ronduit", src: "/app/src/fonts/ronduitCapitalsLight.woff" },
     { name: "nasa", src: "/app/src/fonts/nasalization_rg.otf" },
-    { name: "matrix", src: "/app/src/fonts/whitrabt_webfont.woff" },
+    { name: "matrix", src: "/app/src/fonts/whiteRabbit.woff" },
 ]
 
 const addFontStyle = () => {

@@ -1,13 +1,13 @@
-import * as IMPORT from "/level/helpers/import.js"
+import * as IMPORT from "/framework/helpers/import.js"
 
 export const init = async () => {
-    const helpers = await IMPORT.get("/level/config/helpers.json")
+    const helpers = await IMPORT.get("/framework/config/helpers.json")
     const helpersNum = helpers ? Object.keys(helpers).length : 0
 
-    const animations = await IMPORT.get("/level/config/animations.json")
+    const animations = await IMPORT.get("/framework/config/animations.json")
     const animationsNum = animations ? Object.keys(animations).length : 0
 
-    const components = await IMPORT.get("/level/config/components.json")
+    const components = await IMPORT.get("/framework/config/components.json")
     const componentsNum = components ? Object.keys(components).length : 0
 
     const helperCounter = document.querySelector("#helperCounter")

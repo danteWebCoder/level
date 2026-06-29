@@ -1,0 +1,4 @@
+{
+    "dom": "/framework/helpers/dom.js",
+    "fetch": "/framework/helpers/import.js"
+}
