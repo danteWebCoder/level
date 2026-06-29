@@ -1,7 +1,7 @@
 export const add = ({
     element = null,
     id = null,
-    box = null,
+    node = null,
     css = [/* classes */],
     attr = [/* objects */]
 }) => {
@@ -20,6 +20,6 @@ export const add = ({
         })
     })
 
-    box && box.appendChild(newElement)
+    node && node.appendChild(newElement)
     return newElement
 }
