@@ -1,4 +1,4 @@
-export const levelInit = async () => {
+const levelInit = async () => {
     const verbose = true
 
     const routing = await import("./routing.js")
@@ -8,3 +8,5 @@ export const levelInit = async () => {
         {base: base}
     })
 }
+
+levelInit()

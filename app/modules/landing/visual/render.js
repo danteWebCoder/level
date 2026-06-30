@@ -2,9 +2,10 @@ import * as DOM from "/framework/helpers/dom.js"
 
 const fonts = [
     { name: "neuropol", src: "/app/src/fonts/neuropol.otf" },
-    { name: "ronduit", src: "/app/src/fonts/ronduitCapitalsLight.woff" },
-    { name: "nasa", src: "/app/src/fonts/nasalization_rg.otf" },
-    { name: "matrix", src: "/app/src/fonts/whiteRabbit.woff" },
+    { name: "nasa", src: "/app/src/fonts/nasalizationRG.otf" },
+    { name: "ronduit", src: "/app/src/fonts/ronduitCapitalsLight.otf" },
+    { name: "amped", src: "/app/src/fonts/amped.otf" },
+    { name: "other", src: "/app/src/fonts/hemicube.ttf" },    
 ]
 
 const addFontStyle = () => {
@@ -59,15 +60,40 @@ export const init = () => {
 
     mainBox.innerHTML = `
        <section class="blackBox mainBox">
-            <div class="title1 title">Level</div>
-            <div class="title2 title">Modular framework</div>
+            <h1 class="title1 title">Level</h1>
+            <h2 class="title2 title">Modular framework</h2>
+
+            <div class="actionBox">
+                <div class="button"><span class="text">Enter</span></div>
+                <span class="separator"></span>
+                <div class="button"><span class="text">Download</span></div>
+                <span class="separator"></span>
+                <div class="button"><span class="text">Info</span></div>
+            </div>
+
        </section>
         <section class="whiteBox mainBox">
+            <h3 class="title3">Progress</h3>
             <ul class="infoBox">
-                <li class="counter">helpers <span id="helperCounter" class="number"></span></li>
-                <li class="counter">animations <span id="animationsCounter" class="number"></span></li>
-                <li class="counter">components <span id="componentsCounter" class="number"></span></li>
-            </ul>
+                <li class="counter">
+                    <div class="title">
+                        Helpers
+                    </div>
+                    <span id="helperCounter" class="number"></span>
+                </li>
+                <li class="counter">
+                    <div class="title">
+                        Animations
+                    </div>
+                    <span id="animationsCounter" class="number"></span>
+                </li>
+                <li class="counter">
+                    <div class="title">
+                        Components
+                    </div>
+                    <span id="componentsCounter" class="number"></span>
+                </li> 
+                </ul>
         </section>
     `
 }
