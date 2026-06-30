@@ -1,48 +1,16 @@
 import * as DOM from "/framework/helpers/dom.js"
+import * as FONT from "/framework/helpers/font.js"
 
 const fonts = [
     { name: "neuropol", src: "/app/src/fonts/neuropol.otf" },
     { name: "nasa", src: "/app/src/fonts/nasalizationRG.otf" },
     { name: "ronduit", src: "/app/src/fonts/ronduitCapitalsLight.otf" },
-    { name: "amped", src: "/app/src/fonts/amped.otf" },
-    { name: "other", src: "/app/src/fonts/hemicube.ttf" },    
+    { name: "nasi", src: "/app/src/fonts/nasi.otf" },
+    { name: "neuropolitical", src: "/app/src/fonts/nasi.otf" },
 ]
 
-const addFontStyle = () => {
-    const fontStyle = document.createElement("style")
-    document.head.appendChild(fontStyle)
-    return fontStyle
-}
-
-const addFonts = (fonts) => {
-    const fontStyle = addFontStyle()
-
-    const formatMap = {
-        woff2: "woff2",
-        woff: "woff",
-        ttf: "truetype",
-        otf: "opentype",
-        eot: "embedded-opentype",
-        svg: "svg"
-    }
-
-    fonts.forEach(item => {
-        Object.entries(item).forEach(([key, value]) => {
-            const ext = item.src.split(".").pop()
-            const format = formatMap[ext] || ext
-
-            fontStyle.textContent += `
-                @font-face {
-                    font-family: "${item.name}";
-                    src: url("${item.src}") format("${format}");
-                }
-            `
-        })
-    })
-}
-
 const addStyles = () => {
-    fonts.length && addFonts(fonts)
+    fonts.length && FONT.addFonts(fonts, "landing")
     const newLink = document.createElement("link")
     newLink.href = "/app/modules/landing/styles/render.css"
     newLink.rel = "stylesheet"
@@ -73,24 +41,22 @@ export const init = () => {
 
        </section>
         <section class="whiteBox mainBox">
-            <h3 class="title3">Progress</h3>
+            <h3 class="title3">Added</h3>
             <ul class="infoBox">
                 <li class="counter">
-                    <div class="title">
-                        Helpers
-                    </div>
+                    <span class="title">Helpers</span>
                     <span id="helperCounter" class="number"></span>
                 </li>
                 <li class="counter">
-                    <div class="title">
-                        Animations
-                    </div>
+                    <span class="title">styles</span>
+                    <span id="stylesCounter" class="number"></span>
+                </li> 
+                <li class="counter">
+                    <span class="title">Animations</span>
                     <span id="animationsCounter" class="number"></span>
                 </li>
                 <li class="counter">
-                    <div class="title">
-                        Components
-                    </div>
+                    <span class="title">Components</span>
                     <span id="componentsCounter" class="number"></span>
                 </li> 
                 </ul>

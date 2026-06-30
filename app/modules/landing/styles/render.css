@@ -85,11 +85,11 @@ body {
                     .text {
                         position: relative;
                         top: 0;
-                        font-family: "amped";
-                        font-size: 8px;
+                        font-family: "nasi";
+                        font-size: 11px;
                         color: grey;
                         letter-spacing: 2px;
-                        padding: 12px;
+                        padding: 8px 22px;
                         background-color: rgb(40, 40, 40);
                         border-bottom: 1px solid transparent;
                         transition: 150ms;
@@ -99,7 +99,7 @@ body {
                         color: white;
                         text-shadow: 0 0 10px cyan;
                         top: -18px;
-                        font-size: 10px;
+                        font-size: 14px;
                         border-radius: 8px;
                         border: 2px solid rgba(128, 128, 128, 0.2);
                     }
@@ -120,19 +120,20 @@ body {
 
             .title3 {
                 display: flex;
+                align-items: center;
                 margin-top: 40px;
-                font-family: "other";
-                font-size: 36px;
+                font-family: "neuropolitical";
+                font-size: 16px;
                 font-weight: lighter;
-                color: rgb(240, 240, 240);
-                text-shadow: 0 0 1px rgb(0, 0, 0), 0 0 1px rgb(0, 0, 0), 0 0 1px rgb(0, 0, 0);
+                color: rgb(120, 120, 120);
+                letter-spacing: 4px;
 
                 &::before {
                     content: "";
                     display: flex;
                     width: 26px;
                     height: 26px;
-                    border: 3px solid grey;
+                    border: 2px solid grey;
                     margin-right: 20px;
                 }
             }
@@ -140,7 +141,7 @@ body {
             .infoBox {
                 width: 400px;
                 height: auto;
-                margin: 40px 0;
+                margin-top: 40px;
 
                 .counter {
                     display: flex;
@@ -159,10 +160,10 @@ body {
                         align-items: center;
 
                         font-family: "ronduit";
-                        font-size: 14px;
+                        font-size: 12px;
                         font-weight: bolder;
                         letter-spacing: 4px;
-                        color: grey;
+                        color: rgb(160, 160, 160);
                     }
 
                     .number {
