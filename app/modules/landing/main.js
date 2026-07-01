@@ -1,6 +1,7 @@
 import * as DOM from "/framework/dependencies/helpers/dom.js"
 import * as CSS from "/framework/dependencies/helpers/css.js"
 import * as FONT from "/framework/dependencies/helpers/font.js"
+import * as RESOLVE from "/framework/dependencies/helpers/resolve.js"
 
 export const init = async () => {
     console.log("landing")
@@ -19,15 +20,18 @@ export const init = async () => {
         landing: "/app/modules/landing/styles/main.css"
     }
 
-
+    const modules = {
+        render: "/app/modules/landing/visual/render.js",
+        counter: "/app/modules/landing/logic/infoCounters.js"
+    }
 
     const [render, infoCounters] = await Promise.all([
         import("/app/modules/landing/visual/render.js"),
         import("/app/modules/landing/logic/infoCounters.js")
     ])
 
-    /* render sequence */
-    FONT.add
+    /* preload sequence */
+    FONT.add(fonts)
     CSS.add(styles)
 
 

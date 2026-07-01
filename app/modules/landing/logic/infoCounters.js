@@ -1,16 +1,14 @@
-import * as IMPORT from "/framework/dependencies/helpers/import.js"
-
-export const init = async () => {
-    const helpers = await IMPORT.get("/framework/config/helpers.json")
+export const init = async (RESOLVE) => {
+    const helpers = await RESOLVE.get("/framework/config/helpers.json")
     const helpersNum = helpers ? Object.keys(helpers).length : 0
 
-    const styles = await IMPORT.get("/framework/config/styles.json")
+    const styles = await RESOLVE.get("/framework/config/styles.json")
     const stylesNum = styles ? Object.keys(components).length : 0
 
-    const animations = await IMPORT.get("/framework/config/animations.json")
+    const animations = await RESOLVE.get("/framework/config/animations.json")
     const animationsNum = animations ? Object.keys(animations).length : 0
 
-    const components = await IMPORT.get("/framework/config/components.json")
+    const components = await RESOLVE.get("/framework/config/components.json")
     const componentsNum = components ? Object.keys(components).length : 0
 
     const helperCounter = document.querySelector("#helperCounter")
