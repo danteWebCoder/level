@@ -39,5 +39,5 @@ export const init = async () => {
 
     /* init sequence */
     render.init(DOM)
-    infoCounters.init()
+    infoCounters.init(RESOLVE)
 }

@@ -1,19 +1,22 @@
 export const init = async (RESOLVE) => {
-    const helpers = await RESOLVE.get("/framework/config/helpers.json")
-    const helpersNum = helpers ? Object.keys(helpers).length : 0
+    const info = await RESOLVE.get({
+        helpers: "/framework/config/helpers.json",
+/*         styles: "/framework/config/styles.json",
+        animations: "/framework/config/animations.json",
+        components: "/framework/config/components.json"
+ */    })
 
-    const styles = await RESOLVE.get("/framework/config/styles.json")
-    const stylesNum = styles ? Object.keys(components).length : 0
+    RESOLVE.get(info)
+    console.log(info)
 
-    const animations = await RESOLVE.get("/framework/config/animations.json")
-    const animationsNum = animations ? Object.keys(animations).length : 0
+    const helpersNum = Object.keys(info.helpers).length || 0
+    const stylesNum = Object.keys(info.styles ?? {}).length || 0
+    const animationsNum = Object.keys(info.animations ?? {}).length || 0
+    const componentsNum = Object.keys(info.components ?? {}).length || 0
 
-    const components = await RESOLVE.get("/framework/config/components.json")
-    const componentsNum = components ? Object.keys(components).length : 0
-
-    const helperCounter = document.querySelector("#helperCounter")
-    const animationsCounter = document.querySelector("#animationsCounter")
+    const helperCounter = document.querySelector("#helpersCounter")
     const stylesCounter = document.querySelector("#stylesCounter")
+    const animationsCounter = document.querySelector("#animationsCounter")
     const componentsCounter = document.querySelector("#componentsCounter")
 
     helperCounter.textContent = helpersNum

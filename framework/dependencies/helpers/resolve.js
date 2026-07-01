@@ -5,7 +5,7 @@ const getFetch = async (path) => {
         response = (response && response.ok) && await response.json() || null
     } catch (error) {
         console.error(`fecth failed: ${error} no data ${path}`)
-        response = null
+        return null
     }
 
     if (!response) {
@@ -36,16 +36,31 @@ const getExtension = (path) => {
     return extension
 }
 
-export const get = async (object) => {
+export const get = async (object = null) => {
+    if (!object) {
+        console.error("call without object to resolve")
+        return null
+    }
+
+    if (object.resolved) {
+        console.error("previous resolved:", object)
+        return object
+    }
+
     if (typeof object !== "object" || object === null) {
         console.error(`${object} no object`)
         return null
     }
 
-    await Promise.all(Object.entries(object).map(async ([name, path]) => {
-        const extension = getExtension(path)
-        extension === "json" && (object[name] = await getFetch(path))
-        extension !== "json" && (object[name] = await getImport(path))
+    await Promise.all(Object.entries(object).map(async ([name, value]) => {
+        typeof value === "object" && await get(value)
+
+        if (typeof value === "string") {
+            const extension = getExtension(value)
+            extension === "json" && (object[name] = await getFetch(value))
+            extension !== "json" && (object[name] = await getImport(value))
+        }
     }))
+    object.resolved = true
     return object
 }

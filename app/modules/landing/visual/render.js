@@ -25,7 +25,7 @@ export const init = (DOM) => {
             <ul class="infoBox">
                 <li class="counter">
                     <span class="title">Helpers</span>
-                    <span id="helperCounter" class="number"></span>
+                    <span id="helpersCounter" class="number"></span>
                 </li>
                 <li class="counter">
                     <span class="title">styles</span>
