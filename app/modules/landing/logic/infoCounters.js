@@ -1,4 +1,4 @@
-import * as IMPORT from "/framework/helpers/import.js"
+import * as IMPORT from "/framework/dependencies/helpers/import.js"
 
 export const init = async () => {
     const helpers = await IMPORT.get("/framework/config/helpers.json")

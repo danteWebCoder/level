@@ -1,24 +1,4 @@
-import * as DOM from "/framework/helpers/dom.js"
-import * as FONT from "/framework/helpers/font.js"
-
-const fonts = [
-    { name: "neuropol", src: "/app/src/fonts/neuropol.otf" },
-    { name: "nasa", src: "/app/src/fonts/nasalizationRG.otf" },
-    { name: "ronduit", src: "/app/src/fonts/ronduitCapitalsLight.otf" },
-    { name: "nasi", src: "/app/src/fonts/nasi.otf" },
-    { name: "neuropolitical", src: "/app/src/fonts/nasi.otf" },
-]
-
-const addStyles = () => {
-    fonts.length && FONT.addFonts(fonts, "landing")
-    const newLink = document.createElement("link")
-    newLink.href = "/app/modules/landing/styles/render.css"
-    newLink.rel = "stylesheet"
-    document.head.appendChild(newLink)
-}
-
-export const init = () => {
-    addStyles()
+export const init = (DOM) => {
 
     const mainBox = DOM.add({
         element: "div",

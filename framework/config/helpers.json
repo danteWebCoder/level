@@ -1,4 +1,5 @@
 {
-    "dom": "/framework/helpers/dom.js",
-    "fetch": "/framework/helpers/import.js"
+    "dom": "/framework/dependencies/helpers/dom.js",
+    "font": "/framework/dependencies/helpers/font.js",
+    "import": "/framework/dependencies/helpers/import.js"
 }

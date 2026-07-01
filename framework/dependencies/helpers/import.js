@@ -2,7 +2,7 @@ const getFetch = async (path) => {
     const data = await fetch(path)
 
     if (!data.ok) {
-        console.error(`fecth failed: ${data.status}`)
+        console.error(`fecth failed: ${data.status} ${path}`)
         return null
     }
 
