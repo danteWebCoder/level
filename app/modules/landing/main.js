@@ -13,7 +13,7 @@ export const init = async () => {
         { name: "nasa", src: "/app/src/fonts/nasalizationRG.otf" },
         { name: "ronduit", src: "/app/src/fonts/ronduitCapitalsLight.otf" },
         { name: "nasi", src: "/app/src/fonts/nasi.otf" },
-        { name: "neuropolitical", src: "/app/src/fonts/nasi.otf" },
+        { name: "other", src: "/app/src/fonts/NeogreyMedium.ttf" },
     ]
 
     const styles = {

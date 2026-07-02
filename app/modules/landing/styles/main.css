@@ -70,7 +70,7 @@ body {
                 margin-top: 40px;
                 width: 500px;
                 height: 40px;
-                border: 2px solid rgba(128, 128, 128, 0.2);
+                border: 1px solid rgba(128, 128, 128, 0.4);
                 border-radius: 8px;
 
                 .button {
@@ -121,27 +121,30 @@ body {
             .title3 {
                 display: flex;
                 align-items: center;
-                margin-top: 40px;
-                font-family: "neuropolitical";
-                font-size: 16px;
-                font-weight: lighter;
-                color: rgb(120, 120, 120);
-                letter-spacing: 4px;
+                justify-content: center;
 
-                &::before {
-                    content: "";
-                    display: flex;
-                    width: 26px;
-                    height: 26px;
-                    border: 2px solid grey;
-                    margin-right: 20px;
+                width: 500px;
+                height: 40px;
+                margin-top: 30px;
+                border: 1px solid rgba(128, 128, 128, 0.4);
+                border-radius: 8px;
+
+                .text {
+                    font-family: "nasa";
+                    font-size: 16px;
+                    font-weight: lighter;
+                    color: rgb(40, 40, 40);
+                    letter-spacing: 4px;
                 }
             }
 
             .infoBox {
-                width: 400px;
+                width: 500px;
                 height: auto;
-                margin-top: 40px;
+                padding: 15px;
+                margin-top: 20px;
+                border: 1px solid rgba(128, 128, 128, 0.4);
+                border-radius: 8px;
 
                 .counter {
                     display: flex;

@@ -21,7 +21,9 @@ export const init = (DOM) => {
 
        </section>
         <section class="whiteBox mainBox">
-            <h3 class="title3">Added</h3>
+            <h3 class="title3">
+                <span class="text">Framework Added</span>
+            </h3>
             <ul class="infoBox">
                 <li class="counter">
                     <span class="title">Helpers</span>
