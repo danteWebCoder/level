@@ -22,7 +22,11 @@ export const init = async () => {
 
     const modules = {
         render: "/app/modules/landing/visual/render.js",
-        counter: "/app/modules/landing/logic/infoCounters.js"
+        logic: {
+            counter: "/app/modules/landing/logic/infoCounters.js",
+            events: "/app/modules/landing/logic/events.js"
+        }
+
     }
 
     /* preload sequence */
@@ -34,5 +38,6 @@ export const init = async () => {
 
     /* init sequence */
     modules.render.init(DOM)
-    modules.counter.init(RESOLVE)
+    modules.logic.counter.init(RESOLVE)
+    modules.logic.events.init()
 }

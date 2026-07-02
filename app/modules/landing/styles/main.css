@@ -2,8 +2,8 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    /*     list-style: none;
- */
+    user-select: none;
+    list-style: none;
 }
 
 body {
@@ -116,7 +116,10 @@ body {
         .whiteBox {
             align-items: center;
             flex-direction: column;
+
             background-color: rgb(240, 240, 240);
+            width: 100%;
+            height: 50%;
 
             .title3 {
                 display: flex;
@@ -124,10 +127,8 @@ body {
                 justify-content: center;
 
                 width: 500px;
-                height: 40px;
-                margin-top: 30px;
-                border: 1px solid rgba(128, 128, 128, 0.4);
-                border-radius: 8px;
+                height: auto;
+                margin-top: 20px;
 
                 .text {
                     font-family: "nasa";
@@ -139,29 +140,23 @@ body {
             }
 
             .infoBox {
-                width: 500px;
-                height: auto;
-                padding: 15px;
-                margin-top: 20px;
-                border: 1px solid rgba(128, 128, 128, 0.4);
-                border-radius: 8px;
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                grid-template-rows: repeat(1, 1fr);
+                gap: 20px;
 
-                .counter {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
+                width: 70%;
+                height: 240px;
+                margin-top: 30px;
 
+                .counterCard {
                     width: 100%;
-                    height: auto;
-
-                    &:not(:last-child) {
-                        margin-bottom: 18px;
-                    }
+                    height: 100%;
+                    border: 1px solid rgb(180, 180, 180);
+                    border-radius: 8px;
 
                     .title {
-                        display: flex;
-                        align-items: center;
-
+                        width: auto;
                         font-family: "ronduit";
                         font-size: 12px;
                         font-weight: bolder;
@@ -170,6 +165,7 @@ body {
                     }
 
                     .number {
+                        width: auto;
                         margin-left: 10px;
                         color: rgb(40, 40, 40);
                         font-family: "nasa";

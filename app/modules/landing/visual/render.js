@@ -12,7 +12,7 @@ export const init = (DOM) => {
             <h2 class="title2 title">Modular framework</h2>
 
             <div class="actionBox">
-                <div class="button"><span class="text">Enter</span></div>
+                <div id="actionEnter" class="button"><span class="text">Enter</span></div>
                 <span class="separator"></span>
                 <div class="button"><span class="text">Download</span></div>
                 <span class="separator"></span>
@@ -25,23 +25,23 @@ export const init = (DOM) => {
                 <span class="text">Framework Added</span>
             </h3>
             <ul class="infoBox">
-                <li class="counter">
+                <li class="counterCard">
                     <span class="title">Helpers</span>
                     <span id="helpersCounter" class="number"></span>
                 </li>
-                <li class="counter">
+                <li class="counterCard">
                     <span class="title">styles</span>
                     <span id="stylesCounter" class="number"></span>
                 </li> 
-                <li class="counter">
+                <li class="counterCard">
                     <span class="title">Animations</span>
                     <span id="animationsCounter" class="number"></span>
                 </li>
-                <li class="counter">
+                <li class="counterCard">
                     <span class="title">Components</span>
                     <span id="componentsCounter" class="number"></span>
                 </li> 
-                </ul>
+            </ul>
         </section>
     `
 }
