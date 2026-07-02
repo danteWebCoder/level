@@ -6,7 +6,7 @@ import * as RESOLVE from "/framework/dependencies/helpers/resolve.js"
 export const init = async () => {
     console.log("landing")
 
-    const helpers = ["dom", "css", "font"]
+    const helpers = ["dom", "css", "font", "resolve"]
 
     const fonts = [
         { name: "neuropol", src: "/app/src/fonts/neuropol.otf" },
@@ -25,19 +25,14 @@ export const init = async () => {
         counter: "/app/modules/landing/logic/infoCounters.js"
     }
 
-    const [render, infoCounters] = await Promise.all([
-        import("/app/modules/landing/visual/render.js"),
-        import("/app/modules/landing/logic/infoCounters.js")
+    /* preload sequence */
+    await Promise.all([
+        FONT.add(fonts),
+        CSS.add(styles),
+        RESOLVE.get(modules)
     ])
 
-    /* preload sequence */
-    FONT.add(fonts)
-    CSS.add(styles)
-
-
-
-
     /* init sequence */
-    render.init(DOM)
-    infoCounters.init(RESOLVE)
+    modules.render.init(DOM)
+    modules.counter.init(RESOLVE)
 }
