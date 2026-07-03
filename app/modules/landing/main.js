@@ -15,8 +15,10 @@ export const init = async () => {
         { name: "digi", src: "/app/src/fonts/ds-digi.ttf" },
     ]
 
+    const css = ["neonLight"]
+
     const styles = {
-        landing: "/app/modules/landing/styles/main.css"
+        landing: "/app/modules/landing/styles/main.css",
     }
 
     const modules = {
