@@ -14,9 +14,9 @@ export const init = (DOM) => {
             <div class="actionBox">
                 <div id="actionEnter" class="button"><span class="text">Enter</span></div>
                 <span class="separator"></span>
-                <div class="button"><span class="text">Download</span></div>
+                <div id="actionDown" class="button"><span class="text">Download</span></div>
                 <span class="separator"></span>
-                <div class="button"><span class="text">Info</span></div>
+                <div id="actionInfo" class="button"><span class="text">Info</span></div>
             </div>
 
        </section>
@@ -26,21 +26,33 @@ export const init = (DOM) => {
             </h3>
             <ul class="infoBox">
                 <li class="counterCard">
-                    <span class="title">Helpers</span>
-                    <span id="helpersCounter" class="number"></span>
+                    <div id="backHelpers" class="back"></div>
+                    <div class="front">
+                        <div class="title">Helpers</div>
+                        <div id="helpersCounter" class="number"></div>
+                    </div>
                 </li>
                 <li class="counterCard">
-                    <span class="title">styles</span>
-                    <span id="stylesCounter" class="number"></span>
+                    <div id="backStyles" class="back"></div>
+                    <div class="front">
+                        <div class="title">styles</div>
+                        <div id="stylesCounter" class="number"></div>
+                    </div>
                 </li> 
                 <li class="counterCard">
-                    <span class="title">Animations</span>
-                    <span id="animationsCounter" class="number"></span>
+                    <div id="backAnimations" class="back"></div>
+                    <div class="front">
+                        <div class="title">Animations</div>
+                        <div id="animationsCounter" class="number"></div>
+                    </div>
                 </li>
                 <li class="counterCard">
-                    <span class="title">Components</span>
-                    <span id="componentsCounter" class="number"></span>
-                </li> 
+                    <div id="backComponents" class="back"></div>
+                    <div class="front">
+                        <div class="title">Components</div>
+                        <div id="componentsCounter" class="number"></div>
+                    </div>
+                </li>
             </ul>
         </section>
     `

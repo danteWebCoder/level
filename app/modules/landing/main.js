@@ -11,9 +11,8 @@ export const init = async () => {
     const fonts = [
         { name: "neuropol", src: "/app/src/fonts/neuropol.otf" },
         { name: "nasa", src: "/app/src/fonts/nasalizationRG.otf" },
-        { name: "ronduit", src: "/app/src/fonts/ronduitCapitalsLight.otf" },
         { name: "nasi", src: "/app/src/fonts/nasi.otf" },
-        { name: "other", src: "/app/src/fonts/NeogreyMedium.ttf" },
+        { name: "digi", src: "/app/src/fonts/ds-digi.ttf" },
     ]
 
     const styles = {

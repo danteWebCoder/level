@@ -146,30 +146,68 @@ body {
                 gap: 20px;
 
                 width: 70%;
-                height: 240px;
+                height: 140px;
                 margin-top: 30px;
 
                 .counterCard {
+                    position: relative;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+
                     width: 100%;
                     height: 100%;
-                    border: 1px solid rgb(180, 180, 180);
-                    border-radius: 8px;
+                    border: 1px solid rgba(0, 0, 0, 0.1);
+                    border-radius: 4px;
 
-                    .title {
-                        width: auto;
-                        font-family: "ronduit";
-                        font-size: 12px;
-                        font-weight: bolder;
-                        letter-spacing: 4px;
-                        color: rgb(160, 160, 160);
+                    .back {
+                        position: absolute;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+
+                        top: 0;
+                        width: 100%;
+                        height: 100%;
+                        font-family: "digi";
+                        font-size: 100px;
+                        color: rgba(40, 40, 40, 0.2);
+                        filter: blur(6px);
+                        overflow: hidden;
                     }
 
-                    .number {
-                        width: auto;
-                        margin-left: 10px;
-                        color: rgb(40, 40, 40);
-                        font-family: "nasa";
-                        font-size: 12px;
+                    .front {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: space-between;
+
+                        width: 100%;
+                        height: 100%;
+                        padding: 10px;
+
+
+                        .title {
+                            width: 100%;
+                            font-family: "nasa";
+                            font-size: 14px;
+                            letter-spacing: 4px;
+                            color: rgb(160, 160, 160);
+                        }
+
+                        .number {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+
+                            width: 60%;
+                            height: 40px;
+                            color: rgb(40, 40, 40);
+                            font-family: "digi";
+                            font-size: 20px;
+                            border-top: 1px solid rgb(210, 210, 210);
+                            border-bottom: 1px solid rgb(210, 210, 210);
+                        }
                     }
                 }
             }
