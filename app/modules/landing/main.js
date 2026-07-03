@@ -6,6 +6,9 @@ import * as RESOLVE from "/framework/dependencies/helpers/resolve.js"
 export const init = async () => {
     console.log("landing")
 
+    let module = await import("/framework/dependencies/classes/module.js")
+    module = new module.default()
+
     const helpers = ["dom", "css", "font", "resolve"]
 
     const fonts = [
@@ -15,7 +18,7 @@ export const init = async () => {
         { name: "digi", src: "/app/src/fonts/ds-digi.ttf" },
     ]
 
-    const css = ["neonLight"]
+    const customStyles = ["neonLight"]
 
     const styles = {
         landing: "/app/modules/landing/styles/main.css",
@@ -31,11 +34,19 @@ export const init = async () => {
     }
 
     /* preload sequence */
+    await module.init({
+        font: fonts,
+        helper: helpers,
+        style: styles,
+        custom_style: customStyles
+    })
+
     await Promise.all([
         FONT.add(fonts),
         CSS.add(styles),
         RESOLVE.get(modules)
     ])
+
 
     /* init sequence */
     modules.render.init(DOM)
