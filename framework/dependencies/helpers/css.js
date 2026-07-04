@@ -1,18 +1,23 @@
-export const add = (
-    styles = null
-) => {
-    /*     fonts.length && FONT.addFonts(fonts, "landing")
-     */
-    if(!styles) {
-        console.error("no styles in addStyles call")
+export const add = ({
+    styles = null,
+    name = null
+}) => {
+    if (!styles) {
+        console.error("no styles in CSS ADD")
         return null
     }
 
-    Object.entries(styles).forEach(([name, path]) => {
+    if (!name) {
+        console.error("no name in CSS ADD")
+        return null
+    }
+
+    Object.entries(styles).forEach(([style, path]) => {
         const newLink = document.createElement("link")
-        newLink.setAttribute("data-name", name)
+        newLink.setAttribute("data-module", name)
         newLink.href = path
         newLink.rel = "stylesheet"
         document.head.appendChild(newLink)
     })
+    return true
 }

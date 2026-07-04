@@ -5,7 +5,10 @@ const addFontStyle = (name) => {
     return fontStyle
 }
 
-export const add = (fonts, name) => {
+export const add = ({
+    fonts = null, 
+    name = null
+}) => {
     const fontStyle = addFontStyle(name)
 
     const formatMap = {

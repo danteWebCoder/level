@@ -23,13 +23,18 @@ class Module {
         /* falta validacion para animation */
 
         if (typeof font !== "object") {
-            console.error("FONT config FORMAT ERROR, must be OBJECT", this)
+            console.error("FONT config FORMAT ERROR, needed OBJECT", this)
             return null
+        }
+
+        if (typeof style !== "object") {
+            console.error("STYLE config FORMAT ERROR, needed OBJECT", this)
         }
 
         /* Forgotten dependencies */
         if (font && !helper.includes("font")) helper.push("font")
-
+        if (style && !helper.includes("css")) helper.push("css")
+            
         return true
     }
 
@@ -53,7 +58,13 @@ class Module {
             }
             this.FONT.push(item)
         }
-        this.#STATE && await this.HELPER.font.add(this.FONT, this.NAME)
+        this.#STATE && await this.HELPER.font.add({fonts: this.FONT, name: this.NAME})
+    }
+
+    async #resolveStyles(style) {
+        console.log(this.NAME)
+        this.HELPER.css.add({styles: style, name: this.NAME})
+        return true
     }
 
     async init({
@@ -81,6 +92,7 @@ class Module {
         /* resolve OTHERS DEPENDENCIES */
         const resolves = []
         font && resolves.push(this.#resolveFonts(font))
+        style && resolves.push(this.#resolveStyles(style))
 
         await Promise.all(resolves)
 

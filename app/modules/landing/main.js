@@ -9,13 +9,13 @@ export const init = async () => {
     let module = await import("/framework/dependencies/classes/module.js")
     module = new module.default()
 
-    const helpers = ["dom", "css", "font", "resolve"]
+    const helpers = ["dom"]
 
     const fonts = [
         { name: "neuropol", src: "/app/src/fonts/neuropol.otf" },
         { name: "nasa", src: "/app/src/fonts/nasalizationRG.otf" },
         { name: "nasi", src: "/app/src/fonts/nasi.otf" },
-        { name: "digi", src: "/app/src/fonts/ds-digi.ttf" },
+        { name: "digi", src: "/app/src/fonts/digital-7.ttf" },
     ]
 
     const styles = {
@@ -44,8 +44,8 @@ export const init = async () => {
 
     await Promise.all([
 /*         FONT.add(fonts),
- */        CSS.add(styles),
-        RESOLVE.get(modules)
+        CSS.add(styles),
+ */        RESOLVE.get(modules)
     ])
 
 
