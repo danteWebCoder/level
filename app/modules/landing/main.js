@@ -18,11 +18,11 @@ export const init = async () => {
         { name: "digi", src: "/app/src/fonts/ds-digi.ttf" },
     ]
 
-    const customStyles = ["neonLight"]
-
     const styles = {
         landing: "/app/modules/landing/styles/main.css",
     }
+
+    const customStyles = ["neonLight"]
 
     const modules = {
         render: "/app/modules/landing/visual/render.js",
@@ -35,6 +35,7 @@ export const init = async () => {
 
     /* preload sequence */
     await module.init({
+        name: "landing-module",
         font: fonts,
         helper: helpers,
         style: styles,
@@ -42,8 +43,8 @@ export const init = async () => {
     })
 
     await Promise.all([
-        FONT.add(fonts),
-        CSS.add(styles),
+/*         FONT.add(fonts),
+ */        CSS.add(styles),
         RESOLVE.get(modules)
     ])
 

@@ -2,19 +2,24 @@ import * as RESOLVE from "/framework/dependencies/helpers/resolve.js"
 
 class Module {
     ANIMATION = {}
-    FONT = {}
+    FONT = []
     HELPER = {}
     STYLE = {}
     CUSTOM_STYLE = {}
+    NAME = null
     #JSON = null
     #STATE = true
 
-    #validateConfig(animation, font, helper, style, custom_style) {
-        if (!animation && !font && !helper && !style && !custom_style) {
+    #validateConfig({ animation, font, helper, style, custom_style, name }) {
+        if (!animation && !font && !helper && !style && !custom_style && !name) {
             console.error("no config, what you want to do????", this)
             return null
         }
 
+        if (!name) {
+            console.error("no NAME in MODULE", this)
+            return null
+        }
         /* falta validacion para animation */
 
         if (typeof font !== "object") {
@@ -41,7 +46,14 @@ class Module {
     }
 
     async #resolveFonts(font) {
-
+        for (const item of font) {
+            if (!item.name || !item.src) {
+                console.error(`no correct KEYS in font: ${item}`, this)
+                this.#STATE = null
+            }
+            this.FONT.push(item)
+        }
+        this.#STATE && await this.HELPER.font.add(this.FONT, this.NAME)
     }
 
     async init({
@@ -49,11 +61,12 @@ class Module {
         font = null,
         helper = null,
         style = null,
-        custom_style = null
+        custom_style = null,
+        name = null
     }) {
-
         /* validate config */
-        if (!this.#validateConfig(animation, font, helper, style, custom_style)) return null
+        if (!this.#validateConfig({ animation, font, helper, style, custom_style, name })) return null
+        this.NAME = name
 
         /* add config for resolve */
         const config = {}
@@ -62,13 +75,16 @@ class Module {
         /* resolve JSON config */
         Object.keys(config).length > 0 && (this.#JSON = await RESOLVE.get(config))
 
-        /* resolve MODULE config*/
+        /* resolve HELPER config*/
+        helper && await this.#resolveHelpers(helper)
+
+        /* resolve OTHERS DEPENDENCIES */
         const resolves = []
-        helper && resolves.push(this.#resolveHelpers(helper))
         font && resolves.push(this.#resolveFonts(font))
 
         await Promise.all(resolves)
 
+        /* return */
         if (!this.#STATE) return null
         return true
 
