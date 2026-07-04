@@ -1,7 +1,7 @@
 export const init = async (RESOLVE) => {
     const info = await RESOLVE.get({
         helpers: "/framework/config/helpers.json",
-        styles: "/framework/config/customStyles.json",
+        styles: "/framework/config/dinamicStyles.json",
         animations: "/framework/config/animations.json",
         components: "/framework/config/components.json"
     })

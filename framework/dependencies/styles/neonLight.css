@@ -1,6 +1,0 @@
-.neonLight {
-    --neonLight_color: rgb(121, 224, 190);
-
-    color: white;
-    text-shadow: 0 0 2px rgb(240, 240, 240), 0 0 6px var(----neonLight_color), 0 0 15px var(----neonLight_color), 0 0 30px var(----neonLight_color);
-}

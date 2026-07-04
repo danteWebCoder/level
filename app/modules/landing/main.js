@@ -1,6 +1,6 @@
 import * as DOM from "/framework/dependencies/helpers/dom.js"
 import * as CSS from "/framework/dependencies/helpers/css.js"
-import * as FONT from "/framework/dependencies/helpers/font.js"
+import * as FONT from "/framework/dependencies/helpers/fonts.js"
 import * as RESOLVE from "/framework/dependencies/helpers/resolve.js"
 
 export const init = async () => {
@@ -22,7 +22,7 @@ export const init = async () => {
         landing: "/app/modules/landing/styles/main.css",
     }
 
-    const customStyles = ["neonLight"]
+    const dinamics = ["neon"]
 
     const modules = {
         render: "/app/modules/landing/visual/render.js",
@@ -30,16 +30,16 @@ export const init = async () => {
             counter: "/app/modules/landing/logic/infoCounters.js",
             events: "/app/modules/landing/logic/events.js"
         }
-
     }
 
     /* preload sequence */
     await module.init({
         name: "landing-module",
-        font: fonts,
-        helper: helpers,
-        style: styles,
-        custom_style: customStyles
+        modules: modules,
+        fonts: fonts,
+        helpers: helpers,
+        styles: styles,
+        dinamics: dinamics
     })
 
     await Promise.all([

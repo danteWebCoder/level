@@ -1,105 +1,123 @@
 import * as RESOLVE from "/framework/dependencies/helpers/resolve.js"
 
 class Module {
-    ANIMATION = {}
-    FONT = []
-    HELPER = {}
-    STYLE = {}
-    CUSTOM_STYLE = {}
     NAME = null
+    ANIMATIONS = []
+    FONTS = []
+    HELPERS = {}
+    STYLES = {}
+    DINAMICS = {}
     #JSON = null
     #STATE = true
 
-    #validateConfig({ animation, font, helper, style, custom_style, name }) {
-        if (!animation && !font && !helper && !style && !custom_style && !name) {
+    #validateConfig({ name, animations, fonts, helpers, styles, dinamics }) {
+        if (!name && !animations && !fonts && !helpers && !styles && !dinamics) {
             console.error("no config, what you want to do????", this)
             return null
         }
 
         if (!name) {
-            console.error("no NAME in MODULE", this)
+            console.error("no NAME in MODULE CLASS", this)
             return null
         }
-        /* falta validacion para animation */
+        /* falta validacion para animations */
 
-        if (typeof font !== "object") {
-            console.error("FONT config FORMAT ERROR, needed OBJECT", this)
+        if (fonts && typeof fonts !== "object") {
+            console.error("FONTS config FORMAT ERROR, needed OBJECT", this)
             return null
         }
 
-        if (typeof style !== "object") {
+        if (styles && typeof styles !== "object") {
             console.error("STYLE config FORMAT ERROR, needed OBJECT", this)
+            return null
+        }
+
+        if (dinamics && !Array.isArray(dinamics)) {
+            console.error("DINAMICS config FORMAT ERROR, needed ARRAY", this)
+            return null
         }
 
         /* Forgotten dependencies */
-        if (font && !helper.includes("font")) helper.push("font")
-        if (style && !helper.includes("css")) helper.push("css")
-            
+        if (fonts && !helpers.includes("fonts")) helpers.push("fonts")
+        if (styles && !helpers.includes("css")) helpers.push("css")
+
         return true
     }
 
-    async #resolveHelpers(helper) {
-        helper.forEach(item => {
-            const helperPath = this.#JSON.helper[item] || null
+    async #resolveHelpers(helpers) {
+        helpers.forEach(item => {
+            const helperPath = this.#JSON.helpers[item] || null
             if (!helperPath) {
-                console.error(`no helper ${item.toUpperCase()} found`, this)
+                console.error(`no HELPER ${item.toUpperCase()} found`, this)
                 this.#STATE = null
             }
-            this.HELPER[item] = helperPath
+            this.HELPERS[item] = helperPath
         })
-        this.#STATE && await RESOLVE.get(this.HELPER)
+        this.#STATE && await RESOLVE.get(this.HELPERS)
     }
 
-    async #resolveFonts(font) {
-        for (const item of font) {
+    async #resolveFonts(fonts) {
+        for (const item of fonts) {
             if (!item.name || !item.src) {
                 console.error(`no correct KEYS in font: ${item}`, this)
                 this.#STATE = null
             }
-            this.FONT.push(item)
+            this.FONTS.push(item)
         }
-        this.#STATE && await this.HELPER.font.add({fonts: this.FONT, name: this.NAME})
+        this.#STATE && await this.HELPERS.fonts.add({ fonts: this.FONTS, name: this.NAME })
     }
 
-    async #resolveStyles(style) {
-        console.log(this.NAME)
-        this.HELPER.css.add({styles: style, name: this.NAME})
+    async #resolveStyles(styles) {
+        this.HELPERS.css.add({ styles: styles, moduleName: this.NAME })
         return true
     }
 
+    async #resolveDinamics(dinamics) {
+        dinamics.forEach(item => {
+            const dinamicPath = this.#JSON.styles[item] || null
+            if (!dinamicPath) {
+                console.error(`no STYLE ${item.toUpperCase()} found`, this)
+                this.#STATE = null
+            }
+            this.DINAMICS[item] = dinamicPath
+        })
+        this.#STATE && await RESOLVE.get(this.DINAMICS)
+    }
+
     async init({
-        animation = null,
-        font = null,
-        helper = null,
-        style = null,
-        custom_style = null,
-        name = null
+        name = null,
+        animations = null,
+        fonts = null,
+        helpers = null,
+        styles = null,
+        dinamics = null
     }) {
         /* validate config */
-        if (!this.#validateConfig({ animation, font, helper, style, custom_style, name })) return null
+        if (!this.#validateConfig({ name, animations, fonts, helpers, styles, dinamics })) return null
         this.NAME = name
 
         /* add config for resolve */
         const config = {}
-        helper && (config["helper"] = "/framework/config/helpers.json")
+        helpers && (config["helpers"] = "/framework/config/helpers.json")
+        dinamics && (config["styles"] = "/framework/config/dinamicStyles.json")
 
         /* resolve JSON config */
         Object.keys(config).length > 0 && (this.#JSON = await RESOLVE.get(config))
 
         /* resolve HELPER config*/
-        helper && await this.#resolveHelpers(helper)
+        helpers && await this.#resolveHelpers(helpers)
 
         /* resolve OTHERS DEPENDENCIES */
         const resolves = []
-        font && resolves.push(this.#resolveFonts(font))
-        style && resolves.push(this.#resolveStyles(style))
+        fonts && resolves.push(this.#resolveFonts(fonts))
+        styles && resolves.push(this.#resolveStyles(styles))
+        dinamics && resolves.push(this.#resolveDinamics(dinamics))
 
         await Promise.all(resolves)
 
         /* return */
         if (!this.#STATE) return null
         return true
-
     }
 }
 export default Module
