@@ -7,7 +7,7 @@ export const init = async () => {
     console.log("landing")
 
     let module = await import("/framework/dependencies/classes/module.js")
-    module = new module.default()
+    const landing = new module.default()
 
     const helpers = ["dom"]
 
@@ -33,7 +33,7 @@ export const init = async () => {
     }
 
     /* preload sequence */
-    await module.init({
+    await landing.init({
         name: "landing-module",
         modules: modules,
         fonts: fonts,
@@ -42,15 +42,9 @@ export const init = async () => {
         dinamics: dinamics
     })
 
-    await Promise.all([
-/*         FONT.add(fonts),
-        CSS.add(styles),
- */        RESOLVE.get(modules)
-    ])
-
-
+    console.log(landing)
     /* init sequence */
-    modules.render.init(DOM)
-    modules.logic.counter.init(RESOLVE)
-    modules.logic.events.init()
+    landing.MODULES.render.init(DOM)
+    landing.MODULES.logic.counter.init(RESOLVE)
+    landing.MODULES.logic.events.init()
 }

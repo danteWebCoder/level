@@ -1,18 +1,24 @@
-import * as RESOLVE from "/framework/dependencies/helpers/resolve.js"
+import { get as RESOLVE } from "/framework/dependencies/helpers/resolve.js"
 
 class Module {
     NAME = null
+    MODULES = null
     ANIMATIONS = []
     FONTS = []
     HELPERS = {}
     STYLES = {}
     DINAMICS = {}
     #JSON = null
-    #STATE = true
+    #STATE = true /* true, null, loading, ready */
 
-    #validateConfig({ name, animations, fonts, helpers, styles, dinamics }) {
-        if (!name && !animations && !fonts && !helpers && !styles && !dinamics) {
+    #validateConfig({ modules, name, animations, fonts, helpers, styles, dinamics }) {
+        if (!modules && !name && !animations && !fonts && !helpers && !styles && !dinamics) {
             console.error("no config, what you want to do????", this)
+            return null
+        }
+
+        if (modules && typeof modules !== "object") {
+            console.error("MODULES config FORMAT ERROR, needed OBJECT", this)
             return null
         }
 
@@ -53,7 +59,7 @@ class Module {
             }
             this.HELPERS[item] = helperPath
         })
-        this.#STATE && await RESOLVE.get(this.HELPERS)
+        this.#STATE && await RESOLVE(this.HELPERS)
     }
 
     async #resolveFonts(fonts) {
@@ -81,19 +87,31 @@ class Module {
             }
             this.DINAMICS[item] = dinamicPath
         })
-        this.#STATE && await RESOLVE.get(this.DINAMICS)
+        this.#STATE && await RESOLVE(this.DINAMICS)
+    }
+
+    async #resolveModules(modules) {
+        if (!this.#STATE) return null
+        this.MODULES = await RESOLVE(modules)
+        return true
     }
 
     async init({
         name = null,
+        modules = null,
         animations = null,
         fonts = null,
         helpers = null,
         styles = null,
         dinamics = null
     }) {
+        this.#STATE = "loading"
+        if (this.STATE === "ready" || this.STATE === "loading") {
+            console.info("class previously initialized", this)
+            return null
+        }
         /* validate config */
-        if (!this.#validateConfig({ name, animations, fonts, helpers, styles, dinamics })) return null
+        if (!this.#validateConfig({ modules, name, animations, fonts, helpers, styles, dinamics })) return null
         this.NAME = name
 
         /* add config for resolve */
@@ -102,21 +120,22 @@ class Module {
         dinamics && (config["styles"] = "/framework/config/dinamicStyles.json")
 
         /* resolve JSON config */
-        Object.keys(config).length > 0 && (this.#JSON = await RESOLVE.get(config))
+        Object.keys(config).length > 0 && (this.#JSON = await RESOLVE(config))
 
         /* resolve HELPER config*/
         helpers && await this.#resolveHelpers(helpers)
 
         /* resolve OTHERS DEPENDENCIES */
-        const resolves = []
-        fonts && resolves.push(this.#resolveFonts(fonts))
-        styles && resolves.push(this.#resolveStyles(styles))
-        dinamics && resolves.push(this.#resolveDinamics(dinamics))
-
-        await Promise.all(resolves)
+        await Promise.all([
+            modules && this.#resolveModules(modules),
+            fonts && this.#resolveFonts(fonts),
+            styles && this.#resolveStyles(styles),
+            dinamics && this.#resolveDinamics(dinamics)
+        ])
 
         /* return */
         if (!this.#STATE) return null
+        this.STATE = "ready"
         return true
     }
 }
