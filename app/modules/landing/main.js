@@ -1,6 +1,3 @@
-import * as DOM from "/framework/dependencies/helpers/dom.js"
-import * as CSS from "/framework/dependencies/helpers/css.js"
-import * as FONT from "/framework/dependencies/helpers/fonts.js"
 import * as RESOLVE from "/framework/dependencies/helpers/resolve.js"
 
 export const init = async () => {
@@ -44,7 +41,7 @@ export const init = async () => {
 
     console.log(landing)
     /* init sequence */
-    landing.MODULES.render.init(DOM)
+    landing.MODULES.render.init(landing)
     landing.MODULES.logic.counter.init(RESOLVE)
     landing.MODULES.logic.events.init()
 }

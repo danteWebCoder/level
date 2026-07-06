@@ -1,6 +1,6 @@
-export const init = (DOM) => {
+export const init = async (landing) => {
 
-    const mainBox = DOM.add({
+    const mainBox = landing.HELPERS.dom.add({
         element: "div",
         css: ["landingBox"],
         node: document.body
@@ -9,7 +9,7 @@ export const init = (DOM) => {
     mainBox.innerHTML = `
        <section class="blackBox mainBox">
             <h1 class="title1 title">Level</h1>
-            <h2 class="title2 title">Modular framework</h2>
+            <h2 id="neonTitle" class="title2 title">Modular framework</h2>
 
             <div class="actionBox">
                 <div id="actionEnter" class="button"><span class="text">Enter</span></div>
@@ -56,4 +56,13 @@ export const init = (DOM) => {
             </ul>
         </section>
     `
+
+    landing.DINAMICS.neon.light.info()
+     landing.DINAMICS.neon.light({
+        config: {
+            element: document.querySelector("#neonTitle"),
+            color1: "white",
+            color2: "cyan"
+        }
+    })
 }
