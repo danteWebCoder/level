@@ -39,7 +39,6 @@ export const init = async () => {
         dinamics: dinamics
     })
 
-    console.log(landing)
     /* init sequence */
     landing.MODULES.render.init(landing)
     landing.MODULES.logic.counter.init(RESOLVE)

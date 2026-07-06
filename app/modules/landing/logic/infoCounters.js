@@ -7,7 +7,7 @@ export const init = async (RESOLVE) => {
     })
 
     const helpersNum = Object.keys(info.helpers).length || 0
-    const stylesNum = Object.keys(info.styles ?? {}).length || 0
+    const stylesNum = Object.keys(info.styles).length || 0
     const animationsNum = Object.keys(info.animations ?? {}).length || 0
     const componentsNum = Object.keys(info.components ?? {}).length || 0
 

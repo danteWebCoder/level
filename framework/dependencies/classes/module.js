@@ -135,7 +135,7 @@ class Module {
 
         /* return */
         if (!this.#STATE) return null
-        this.STATE = "ready"
+        this.#STATE = "ready"
         return true
     }
 }

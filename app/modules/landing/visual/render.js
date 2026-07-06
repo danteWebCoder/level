@@ -57,8 +57,7 @@ export const init = async (landing) => {
         </section>
     `
 
-    landing.DINAMICS.neon.light.info()
-     landing.DINAMICS.neon.light({
+    landing.DINAMICS.neon.light({
         config: {
             element: document.querySelector("#neonTitle"),
             color1: "white",
