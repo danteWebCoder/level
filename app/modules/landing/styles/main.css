@@ -56,6 +56,8 @@ body {
                 margin-bottom: 40px;
                 font-family: "nasa";
                 font-size: 34px;
+                color: rgb(40, 40, 40);
+                text-shadow: 0 0 2px grey;
                 letter-spacing: 10px;
             }
 
@@ -94,7 +96,7 @@ body {
 
                     &:hover .text {
                         color: white;
-                        text-shadow: 0 0 10px cyan;
+                        text-shadow: 0 0 4px cyan, 0 0 10px cyan;
                         top: -18px;
                         font-size: 14px;
                         border-radius: 8px;

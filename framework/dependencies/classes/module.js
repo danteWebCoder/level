@@ -90,6 +90,18 @@ class Module {
         this.#STATE && await RESOLVE(this.DINAMICS)
     }
 
+    async #resolveAnimations(animations) {
+        animations.forEach(item => {
+            const dinamicPath = this.#JSON.animations[item] || null
+            if (!dinamicPath) {
+                console.error(`no ANIMATION ${item.toUpperCase()} found`, this)
+                this.#STATE = null
+            }
+            this.ANIMATIONS[item] = dinamicPath
+        })
+        this.#STATE && await RESOLVE(this.ANIMATIONS)
+    }
+
     async #resolveModules(modules) {
         if (!this.#STATE) return null
         this.MODULES = await RESOLVE(modules)
@@ -118,6 +130,7 @@ class Module {
         const config = {}
         helpers && (config["helpers"] = "/framework/config/helpers.json")
         dinamics && (config["styles"] = "/framework/config/dinamicStyles.json")
+        animations && (config["animations"] = "/framework/config/animations.json")
 
         /* resolve JSON config */
         Object.keys(config).length > 0 && (this.#JSON = await RESOLVE(config))
@@ -130,7 +143,8 @@ class Module {
             modules && this.#resolveModules(modules),
             fonts && this.#resolveFonts(fonts),
             styles && this.#resolveStyles(styles),
-            dinamics && this.#resolveDinamics(dinamics)
+            dinamics && this.#resolveDinamics(dinamics),
+            animations && this.#resolveAnimations(animations)
         ])
 
         /* return */

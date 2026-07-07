@@ -21,6 +21,8 @@ export const init = async () => {
 
     const dinamics = ["neon"]
 
+    const animations = ["glitch"]
+
     const modules = {
         render: "/app/modules/landing/visual/render.js",
         logic: {
@@ -36,7 +38,8 @@ export const init = async () => {
         fonts: fonts,
         helpers: helpers,
         styles: styles,
-        dinamics: dinamics
+        dinamics: dinamics,
+        animations: animations
     })
 
     /* init sequence */

@@ -6,8 +6,8 @@ export const light = ({
         config.color1 = config.color1 || null
         config.color2 = config.color2 || null
 
-        if (!config.element || !config.color1 || !config.color2) {
-            light.info()
+        if (!config || !config?.element || !config?.color1 || !config?.color2) {
+            info()
             return null
         }
 
@@ -21,16 +21,6 @@ export const light = ({
     }
 }
 
-light.info = () => {
-    console.info(`NEONLIGHT { 
-        config: { 
-            element: dom's element, 
-            color1: font's color, 
-            color2: shadow color 
-        } 
-    }`)
-}
-
 export const bold = ({
     config = null,
 }) => {
@@ -40,7 +30,7 @@ export const bold = ({
         config.color2 = config.color2 || null
 
         if (!config.element || !config.color1 || !config.color2) {
-            bold.info()
+            info()
             return null
         }
 
@@ -57,8 +47,8 @@ export const bold = ({
     }
 }
 
-bold.info = () => {
-    console.info(`NEONBOLD { 
+export const info = () => {
+    console.info(`STYLE NEONLIGHT { 
         config: { 
             element: dom's element, 
             color1: font's color, 
