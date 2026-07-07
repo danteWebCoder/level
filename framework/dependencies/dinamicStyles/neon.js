@@ -11,6 +11,8 @@ export const light = ({
             return null
         }
 
+        const dinamics = config.element.dataset.dinamics || ""
+        config.element.dataset.dinamics = `${dinamics} neon`.trim()
         config.element.style.color = config.color1
         config.element.style.textShadow = `
         0 0 2px ${config.color1},
@@ -34,6 +36,8 @@ export const bold = ({
             return null
         }
 
+        const dinamics = config.element.dataset.dinamics || ""
+        config.element.dataset.dinamics = `${dinamics} neon`.trim()
         config.element.style.color = config.color1
         config.element.style.textShadow = `
         0 0 2px ${config.color1},
@@ -52,7 +56,9 @@ export const info = () => {
         config: { 
             element: dom's element, 
             color1: font's color, 
-            color2: shadow color 
+            color2: text shadow color 
         } 
+        
+        compatible animations: glitch
     }`)
 }

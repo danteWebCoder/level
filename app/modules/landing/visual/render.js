@@ -56,18 +56,21 @@ export const init = async (landing) => {
             </ul>
         </section>
     `
-    landing.ANIMATIONS.glitch.random({
-        config: {
-            element: document.querySelector("#neonTitle"),
-            delay: 500
-        }
-    })
-
-/*     landing.DINAMICS.neon.light({
+    landing.DINAMICS.neon.light({
         config: {
             element: document.querySelector("#neonTitle"),
             color1: "white",
             color2: "cyan"
         }
     })
- */}
+
+    landing.ANIMATIONS.glitch.random({
+        config: {
+            element: document.querySelector("#neonTitle"),
+            initial_delay: 2000,
+            delay: 400,
+            color: "rgb(40, 40, 40)",
+            shadow: "0 0 2px rgb(140, 140, 140)"
+        }
+    })
+}
