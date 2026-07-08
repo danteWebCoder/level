@@ -39,9 +39,12 @@ export const init = async () => {
         helpers: helpers,
         styles: styles,
         dinamics: dinamics,
-        animations: animations
+        animations: animations,
+        local_register: false,
+        global_register: null
     })
 
+    console.log(landing)
     /* init sequence */
     landing.MODULES.render.init(landing)
     landing.MODULES.logic.counter.init(RESOLVE)

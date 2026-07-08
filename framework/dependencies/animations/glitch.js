@@ -1,15 +1,19 @@
 export const random = async ({
     config = null
 }) => {
-    const compatibleDinamics = ["neon"]
+    const requireDinamic = ["neon"]
     const dinamics = config.element.dataset.dinamics?.split(" ") || []
 
-    if (!config || !config?.element || !config?.delay || !config?.color || !config?.shadow) {
+    if (!config ||
+        !config?.element ||
+        !config?.delay ||
+        !config?.color ||
+        !config?.shadow) {
         random.info()
         return null
     }
 
-    const compatible = dinamics.some(item => compatibleDinamics.includes(item))
+    const compatible = dinamics.some(item => requireDinamic.includes(item))
     if (!compatible) {
         console.error("ANIMATION GLITCH: not compatible")
         return null
@@ -38,7 +42,7 @@ random.info = () => {
             shadow: text shadow color
         } 
         
-        compatible animations: glitch
+        compatible dinamics styles: neon
     }`)
 }
 
@@ -84,6 +88,12 @@ const randomChar = async (config, chars, original_textShadow, original_color) =>
 const glitch = async (config, char, original_textShadow, original_color) => {
     char.dataset.inUse = "in-use"
 
+    char.style.textShadow = config.shadow
+    char.style.color = config.color
+    await sleep(300)
+    char.style.textShadow = original_textShadow
+    char.style.color = original_color
+    await sleep(10)
     char.style.textShadow = config.shadow
     char.style.color = config.color
     await sleep(300)

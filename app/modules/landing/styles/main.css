@@ -40,8 +40,14 @@ body {
                 justify-content: center;
 
                 font-family: "neuropol";
-                color: rgb(240, 240, 240);
-                font-size: 80px;
+                color: rgb(40, 40, 40);
+                text-shadow:
+                    0 0 28px rgb(255, 255, 255),
+                    0 0 18px rgb(180, 255, 255),
+                    0 0 18px rgb(180, 255, 255),
+                    0 0 18px rgb(180, 255, 255);
+                font-size: 70px;
+                font-weight: bolder;
                 letter-spacing: 20px;
             }
 
@@ -52,10 +58,10 @@ body {
                 flex-direction: column;
 
                 height: auto;
-                margin-top: 10px;
+                margin-top: 20px;
                 margin-bottom: 40px;
                 font-family: "nasa";
-                font-size: 34px;
+                font-size: 26px;
                 color: rgb(40, 40, 40);
                 text-shadow: 0 0 2px grey;
                 letter-spacing: 10px;
@@ -144,7 +150,7 @@ body {
                 grid-template-rows: repeat(1, 1fr);
                 gap: 20px;
 
-                width: 70%;
+                width: 1000px;
                 height: 140px;
                 margin-top: 30px;
 
@@ -203,7 +209,7 @@ body {
                             height: 40px;
                             color: rgb(40, 40, 40);
                             font-family: "digi";
-                            font-size: 20px;
+                            font-size: 22px;
                             border-top: 1px solid rgb(210, 210, 210);
                             border-bottom: 1px solid rgb(210, 210, 210);
                         }

@@ -8,10 +8,12 @@ class Module {
     HELPERS = {}
     STYLES = {}
     DINAMICS = {}
+    LOCAL_REGISTER = null /* clean module reg */
+    GLOBAL_REGISTER = null /* global reference */
     #JSON = null
     #STATE = true /* true, null, loading, ready */
 
-    #validateConfig({ modules, name, animations, fonts, helpers, styles, dinamics }) {
+    #validateConfig({ modules, name, animations, fonts, helpers, styles, dinamics, local_register }) {
         if (!modules && !name && !animations && !fonts && !helpers && !styles && !dinamics) {
             console.error("no config, what you want to do????", this)
             return null
@@ -43,11 +45,21 @@ class Module {
             return null
         }
 
+        if (local_register && typeof local_register !== "boolean") {
+            console.error("LOCAL_REGISTER value TRUE / FALSE - default false")
+            return null
+        }
+
         /* Forgotten dependencies */
         if (fonts && !helpers.includes("fonts")) helpers.push("fonts")
         if (styles && !helpers.includes("css")) helpers.push("css")
 
         return true
+    }
+
+    async #activeRegister() {
+        const module = "/framework/dependencies/classes/module_register.js"
+        this.LOCAL_REGISTER = new (await import(module)).default()
     }
 
     async #resolveHelpers(helpers) {
@@ -115,7 +127,9 @@ class Module {
         fonts = null,
         helpers = null,
         styles = null,
-        dinamics = null
+        dinamics = null,
+        local_register = null,
+        global_register = null
     }) {
         this.#STATE = "loading"
         if (this.STATE === "ready" || this.STATE === "loading") {
@@ -123,7 +137,7 @@ class Module {
             return null
         }
         /* validate config */
-        if (!this.#validateConfig({ modules, name, animations, fonts, helpers, styles, dinamics })) return null
+        if (!this.#validateConfig({ modules, name, animations, fonts, helpers, styles, dinamics, local_register })) return null
         this.NAME = name
 
         /* add config for resolve */
@@ -144,7 +158,8 @@ class Module {
             fonts && this.#resolveFonts(fonts),
             styles && this.#resolveStyles(styles),
             dinamics && this.#resolveDinamics(dinamics),
-            animations && this.#resolveAnimations(animations)
+            animations && this.#resolveAnimations(animations),
+            local_register && this.#activeRegister()
         ])
 
         /* return */

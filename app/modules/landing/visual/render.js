@@ -59,8 +59,8 @@ export const init = async (landing) => {
     landing.DINAMICS.neon.light({
         config: {
             element: document.querySelector("#neonTitle"),
-            color1: "white",
-            color2: "cyan"
+            color: "white",
+            shadow: "rgb(80, 255, 255)"
         }
     })
 
@@ -69,8 +69,8 @@ export const init = async (landing) => {
             element: document.querySelector("#neonTitle"),
             initial_delay: 2000,
             delay: 400,
-            color: "rgb(40, 40, 40)",
-            shadow: "0 0 2px rgb(140, 140, 140)"
+            color: "rgb(50, 50, 50)",
+            shadow: "0 0 2px rgba(220, 255, 255, 0.5)"
         }
     })
 }
