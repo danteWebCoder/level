@@ -8,8 +8,7 @@ class Module {
     HELPERS = {}
     STYLES = {}
     DINAMICS = {}
-    LOCAL_REGISTER = null /* clean module reg */
-    GLOBAL_REGISTER = null /* global reference */
+    REGISTER = null
     #JSON = null
     #STATE = true /* true, null, loading, ready */
 
@@ -55,11 +54,6 @@ class Module {
         if (styles && !helpers.includes("css")) helpers.push("css")
 
         return true
-    }
-
-    async #activeRegister() {
-        const module = "/framework/dependencies/classes/module_register.js"
-        this.LOCAL_REGISTER = new (await import(module)).default()
     }
 
     async #resolveHelpers(helpers) {
@@ -128,8 +122,7 @@ class Module {
         helpers = null,
         styles = null,
         dinamics = null,
-        local_register = null,
-        global_register = null
+        register = null
     }) {
         this.#STATE = "loading"
         if (this.STATE === "ready" || this.STATE === "loading") {
@@ -137,8 +130,9 @@ class Module {
             return null
         }
         /* validate config */
-        if (!this.#validateConfig({ modules, name, animations, fonts, helpers, styles, dinamics, local_register })) return null
+        if (!this.#validateConfig({ modules, name, animations, fonts, helpers, styles, dinamics })) return null
         this.NAME = name
+        this.REGISTER = register
 
         /* add config for resolve */
         const config = {}
@@ -159,9 +153,10 @@ class Module {
             styles && this.#resolveStyles(styles),
             dinamics && this.#resolveDinamics(dinamics),
             animations && this.#resolveAnimations(animations),
-            local_register && this.#activeRegister()
         ])
 
+        /* local register */
+        
         /* return */
         if (!this.#STATE) return null
         this.#STATE = "ready"

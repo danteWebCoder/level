@@ -61,6 +61,5 @@ export const get = async (object = null) => {
             extension !== "json" && (object[name] = await getImport(value))
         }
     }))
-    object.resolved = true
     return object
 }

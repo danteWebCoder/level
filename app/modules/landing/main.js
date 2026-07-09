@@ -6,7 +6,7 @@ export const init = async () => {
     let module = await import("/framework/dependencies/classes/module.js")
     const landing = new module.default()
 
-    const helpers = ["dom"]
+    const helpers = ["dom", "event"]
 
     const fonts = [
         { name: "neuropol", src: "/app/src/fonts/neuropol.otf" },
@@ -24,7 +24,8 @@ export const init = async () => {
     const animations = ["glitch"]
 
     const modules = {
-        render: "/app/modules/landing/visual/render.js",
+/*         register: 
+ */        render: "/app/modules/landing/visual/render.js",
         logic: {
             counter: "/app/modules/landing/logic/infoCounters.js",
             events: "/app/modules/landing/logic/events.js"
@@ -40,13 +41,12 @@ export const init = async () => {
         styles: styles,
         dinamics: dinamics,
         animations: animations,
-        local_register: false,
-        global_register: null
-    })
+/*         register: 
+ */    })
 
     console.log(landing)
     /* init sequence */
     landing.MODULES.render.init(landing)
     landing.MODULES.logic.counter.init(RESOLVE)
-    landing.MODULES.logic.events.init()
+    landing.MODULES.logic.events.init(landing)
 }

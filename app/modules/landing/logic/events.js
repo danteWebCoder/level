@@ -1,13 +1,13 @@
-const addEvents = (item, callback) => {
-    item.addEventListener("click", callback)
-}
-
-export const init = () => {
+export const init = (landing) => {
     const enterButton = document.querySelector("#actionEnter")
     const downButton = document.querySelector("#actionDown")
     const infoButton = document.querySelector("#actionInfo")
 
-    addEvents(enterButton, () => console.log("enter"))
-    addEvents(downButton, () => console.log("down"))
-    addEvents(infoButton, () => console.log("info"))
+    const enter = () => console.log("enter")
+
+    landing.HELPERS.event.add({
+        element: enterButton,
+        event: "click",
+        callback: enter
+    })
 }
