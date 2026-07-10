@@ -52,11 +52,11 @@ export const bold = ({
 
 export const info = () => {
     console.info(`DINAMIC STYLE NEON { 
-        config: { 
+        config ({ 
             element: dom's element, 
             color: font's color, 
             shadow: text shadow color 
-        } 
+        }) 
         
         compatible animations: glitch
     }`)

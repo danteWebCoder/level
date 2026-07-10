@@ -1,4 +1,7 @@
+let test = null
+
 export const init = async (module) => {
+    const helpers = ["css", "dom", "fonts"]
 
     const fonts = [
         { name: "neuropol", src: "/app/src/fonts/neuropol.otf", module: "render" },
@@ -7,8 +10,12 @@ export const init = async (module) => {
         { name: "digi", src: "/app/src/fonts/digital-7.ttf", module: "render" },
     ]
 
-    module.addFonts(fonts)
+    await module.configure({
+        helpers: helpers,
+        fonts: fonts
+    })
 
+    console.log(module)
     const mainBox = module.HELPERS.dom.add({
         element: "div",
         css: ["landingBox"],
@@ -65,7 +72,7 @@ export const init = async (module) => {
             </ul>
         </section>
     `
-    module.DINAMICS.neon.light({
+/*     module.DINAMICS.neon.light({
         config: {
             element: document.querySelector("#neonTitle"),
             color: "white",
@@ -82,4 +89,4 @@ export const init = async (module) => {
             shadow: "0 0 2px rgba(220, 255, 255, 0.5)"
         }
     })
-}
+ */}

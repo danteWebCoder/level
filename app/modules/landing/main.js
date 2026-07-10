@@ -1,8 +1,6 @@
-import module from "/framework/dependencies/classes/module.js"
+import module from "/framework/dependencies/classes/moduleResolver.js"
 
 export const init = async () => {
-    const helpers = ["css", "dom", "events", "fonts"]
-
     const styles = {
         landing: "/app/modules/landing/styles/main.css",
     }
@@ -23,16 +21,13 @@ export const init = async () => {
     await module.init({
         name: "landing-module",
         modules: modules,
-        helpers: helpers,
-/*         styles: styles,
-        dinamics: dinamics,
-        animations: animations,
- */        register: true
+        styles: styles,
+        register: true
     })
 
     console.log(module)
     /* init sequence */
-    module.MODULES.render.init(module)
-    module.MODULES.logic.counter.init(module)
+/*     module.MODULES.render.init(module)
+ *//*     module.MODULES.logic.counter.init(module)
     module.MODULES.logic.events.init(module)
-}
+ */}

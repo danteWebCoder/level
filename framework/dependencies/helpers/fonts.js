@@ -3,7 +3,6 @@ const addFontStyle = (font, name) => {
     fontStyle.dataset.module = name
     fontStyle.dataset.font = font.name
     document.head.appendChild(fontStyle)
-    console.log(fontStyle)
     return fontStyle
 }
 
