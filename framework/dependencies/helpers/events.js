@@ -1,7 +1,9 @@
 export const add = ({
     element = null,
     event = null,
-    callback = null
+    callback = null,
+    register = null
+
 }) => {
     if (!element || !event || !callback) {
         console.error("EVENT ADD config error")
@@ -14,7 +16,8 @@ export const add = ({
 export const remove = ({
     element = null,
     event = null,
-    callback = null
+    callback = null,
+    register = null
 }) => {
     if (!element || !event || !callback) {
         console.error("EVENT REMOVE config error")
@@ -22,4 +25,22 @@ export const remove = ({
     }
 
     element.removeEventListener(event, callback)
+}
+
+const register = ({
+    element = null,
+    event = null,
+    callback = null,
+    register = null
+}) => {
+
+}
+
+const unregister = ({
+    element = null,
+    event = null,
+    callback = null,
+    register = null
+}) => {
+
 }

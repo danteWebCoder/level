@@ -1,19 +1,7 @@
-import * as RESOLVE from "/framework/dependencies/helpers/resolve.js"
+import module from "/framework/dependencies/classes/module.js"
 
 export const init = async () => {
-    console.log("landing")
-
-    let module = await import("/framework/dependencies/classes/module.js")
-    const landing = new module.default()
-
-    const helpers = ["dom", "event"]
-
-    const fonts = [
-        { name: "neuropol", src: "/app/src/fonts/neuropol.otf" },
-        { name: "nasa", src: "/app/src/fonts/nasalizationRG.otf" },
-        { name: "nasi", src: "/app/src/fonts/nasi.otf" },
-        { name: "digi", src: "/app/src/fonts/digital-7.ttf" },
-    ]
+    const helpers = ["css", "dom", "events", "fonts"]
 
     const styles = {
         landing: "/app/modules/landing/styles/main.css",
@@ -24,8 +12,7 @@ export const init = async () => {
     const animations = ["glitch"]
 
     const modules = {
-/*         register: 
- */        render: "/app/modules/landing/visual/render.js",
+        render: "/app/modules/landing/visual/render.js",
         logic: {
             counter: "/app/modules/landing/logic/infoCounters.js",
             events: "/app/modules/landing/logic/events.js"
@@ -33,20 +20,19 @@ export const init = async () => {
     }
 
     /* preload sequence */
-    await landing.init({
+    await module.init({
         name: "landing-module",
         modules: modules,
-        fonts: fonts,
         helpers: helpers,
-        styles: styles,
+/*         styles: styles,
         dinamics: dinamics,
         animations: animations,
-/*         register: 
- */    })
+ */        register: true
+    })
 
-    console.log(landing)
+    console.log(module)
     /* init sequence */
-    landing.MODULES.render.init(landing)
-    landing.MODULES.logic.counter.init(RESOLVE)
-    landing.MODULES.logic.events.init(landing)
+    module.MODULES.render.init(module)
+    module.MODULES.logic.counter.init(module)
+    module.MODULES.logic.events.init(module)
 }

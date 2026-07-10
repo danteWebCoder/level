@@ -1,6 +1,15 @@
-export const init = async (landing) => {
+export const init = async (module) => {
 
-    const mainBox = landing.HELPERS.dom.add({
+    const fonts = [
+        { name: "neuropol", src: "/app/src/fonts/neuropol.otf", module: "render" },
+        { name: "nasa", src: "/app/src/fonts/nasalizationRG.otf", module: "render" },
+        { name: "nasi", src: "/app/src/fonts/nasi.otf", module: "render" },
+        { name: "digi", src: "/app/src/fonts/digital-7.ttf", module: "render" },
+    ]
+
+    module.addFonts(fonts)
+
+    const mainBox = module.HELPERS.dom.add({
         element: "div",
         css: ["landingBox"],
         node: document.body
@@ -56,7 +65,7 @@ export const init = async (landing) => {
             </ul>
         </section>
     `
-    landing.DINAMICS.neon.light({
+    module.DINAMICS.neon.light({
         config: {
             element: document.querySelector("#neonTitle"),
             color: "white",
@@ -64,7 +73,7 @@ export const init = async (landing) => {
         }
     })
 
-    landing.ANIMATIONS.glitch.random({
+    module.ANIMATIONS.glitch.random({
         config: {
             element: document.querySelector("#neonTitle"),
             initial_delay: 2000,

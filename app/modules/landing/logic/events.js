@@ -5,7 +5,7 @@ export const init = (landing) => {
 
     const enter = () => console.log("enter")
 
-    landing.HELPERS.event.add({
+    landing.HELPERS.events.add({
         element: enterButton,
         event: "click",
         callback: enter

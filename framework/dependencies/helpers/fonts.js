@@ -1,15 +1,16 @@
-const addFontStyle = (name) => {
+const addFontStyle = (font, name) => {
     const fontStyle = document.createElement("style")
-    fontStyle.setAttribute("data-module", name)
+    fontStyle.dataset.module = name
+    fontStyle.dataset.font = font.name
     document.head.appendChild(fontStyle)
+    console.log(fontStyle)
     return fontStyle
 }
 
 export const add = ({
-    fonts = null, 
+    fonts = null,
     name = null
 }) => {
-    const fontStyle = addFontStyle(name)
 
     const formatMap = {
         woff2: "woff2",
@@ -21,16 +22,15 @@ export const add = ({
     }
 
     fonts.forEach(item => {
-        Object.entries(item).forEach(([key, value]) => {
-            const ext = item.src.split(".").pop()
-            const format = formatMap[ext] || ext
+        const ext = item.src.split(".").pop()
+        const format = formatMap[ext] || ext
+        const fontStyle = addFontStyle(item, name)
 
-            fontStyle.textContent += `
-                @font-face {
-                    font-family: "${item.name}";
-                    src: url("${item.src}") format("${format}");
-                }
-            `
-        })
+        fontStyle.textContent += `
+            @font-face {
+                font-family: "${item.name}";
+                src: url("${item.src}") format("${format}");
+            }
+        `
     })
 }

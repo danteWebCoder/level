@@ -1,5 +1,5 @@
-export const init = async (RESOLVE) => {
-    const info = await RESOLVE.get({
+export const init = async (module) => {
+    const info = await module.RESOLVE.get({
         helpers: "/framework/config/helpers.json",
         styles: "/framework/config/dinamicStyles.json",
         animations: "/framework/config/animations.json",

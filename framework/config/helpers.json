@@ -1,7 +1,7 @@
 {
     "css": "/framework/dependencies/helpers/css.js",
     "dom": "/framework/dependencies/helpers/dom.js",
-    "event": "/framework/dependencies/helpers/event.js",
+    "events": "/framework/dependencies/helpers/events.js",
     "fonts": "/framework/dependencies/helpers/fonts.js",
     "import": "/framework/dependencies/helpers/import.js",
     "resolve": "/framework/dependencies/helpers/resolve.js"

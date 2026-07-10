@@ -1,18 +1,19 @@
-import { get as RESOLVE } from "/framework/dependencies/helpers/resolve.js"
+import { get as resolve } from "/framework/dependencies/helpers/resolve.js"
 
 class Module {
-    NAME = null
-    MODULES = null
     ANIMATIONS = []
-    FONTS = []
     HELPERS = {}
     STYLES = {}
     DINAMICS = {}
-    REGISTER = null
+    RESOLVE = resolve
+    NAME = null
+    MODULES = null
+    LOCAL_REGISTER = null
+    MODULES_REGISTER = null
     #JSON = null
     #STATE = true /* true, null, loading, ready */
 
-    #validateConfig({ modules, name, animations, fonts, helpers, styles, dinamics, local_register }) {
+    #validateConfig({ modules, name, animations,  helpers, styles, dinamics, local_register }) {
         if (!modules && !name && !animations && !fonts && !helpers && !styles && !dinamics) {
             console.error("no config, what you want to do????", this)
             return null
@@ -29,10 +30,6 @@ class Module {
         }
         /* falta validacion para animations */
 
-        if (fonts && typeof fonts !== "object") {
-            console.error("FONTS config FORMAT ERROR, needed OBJECT", this)
-            return null
-        }
 
         if (styles && typeof styles !== "object") {
             console.error("STYLE config FORMAT ERROR, needed OBJECT", this)
@@ -48,11 +45,6 @@ class Module {
             console.error("LOCAL_REGISTER value TRUE / FALSE - default false")
             return null
         }
-
-        /* Forgotten dependencies */
-        if (fonts && !helpers.includes("fonts")) helpers.push("fonts")
-        if (styles && !helpers.includes("css")) helpers.push("css")
-
         return true
     }
 
@@ -65,18 +57,23 @@ class Module {
             }
             this.HELPERS[item] = helperPath
         })
-        this.#STATE && await RESOLVE(this.HELPERS)
+        this.#STATE && await this.RESOLVE(this.HELPERS)
     }
 
-    async #resolveFonts(fonts) {
+    async addFonts(fonts) {
+        console.log(fonts)
+        if (fonts && typeof fonts !== "object") {
+            console.error("FONTS config FORMAT ERROR, needed OBJECT", this)
+            return null
+        }
+
         for (const item of fonts) {
             if (!item.name || !item.src) {
                 console.error(`no correct KEYS in font: ${item}`, this)
                 this.#STATE = null
             }
-            this.FONTS.push(item)
         }
-        this.#STATE && await this.HELPERS.fonts.add({ fonts: this.FONTS, name: this.NAME })
+        this.#STATE && await this.HELPERS.fonts.add({ "fonts": fonts, "name": this.NAME })
     }
 
     async #resolveStyles(styles) {
@@ -93,7 +90,7 @@ class Module {
             }
             this.DINAMICS[item] = dinamicPath
         })
-        this.#STATE && await RESOLVE(this.DINAMICS)
+        this.#STATE && await this.RESOLVE(this.DINAMICS)
     }
 
     async #resolveAnimations(animations) {
@@ -105,21 +102,30 @@ class Module {
             }
             this.ANIMATIONS[item] = dinamicPath
         })
-        this.#STATE && await RESOLVE(this.ANIMATIONS)
+        this.#STATE && await this.RESOLVE(this.ANIMATIONS)
     }
 
-    async #resolveModules(modules) {
+    async resolveModules(modules) {
         if (!this.#STATE) return null
-        this.MODULES = await RESOLVE(modules)
+        this.MODULES = await this.RESOLVE(modules)
         return true
+    }
+
+    /* api methods */
+    #registerEvent() {
+
+    }
+
+    #unregisterEvent() {
+
     }
 
     async init({
         name = null,
         modules = null,
         animations = null,
-        fonts = null,
-        helpers = null,
+/*         fonts = null,
+ */        helpers = null,
         styles = null,
         dinamics = null,
         register = null
@@ -130,7 +136,7 @@ class Module {
             return null
         }
         /* validate config */
-        if (!this.#validateConfig({ modules, name, animations, fonts, helpers, styles, dinamics })) return null
+        if (!this.#validateConfig({ modules, name, animations,  helpers, styles, dinamics })) return null
         this.NAME = name
         this.REGISTER = register
 
@@ -141,26 +147,26 @@ class Module {
         animations && (config["animations"] = "/framework/config/animations.json")
 
         /* resolve JSON config */
-        Object.keys(config).length > 0 && (this.#JSON = await RESOLVE(config))
+        Object.keys(config).length > 0 && (this.#JSON = await this.RESOLVE(config))
 
-        /* resolve HELPER config*/
+        /* API */
         helpers && await this.#resolveHelpers(helpers)
 
-        /* resolve OTHERS DEPENDENCIES */
         await Promise.all([
-            modules && this.#resolveModules(modules),
-            fonts && this.#resolveFonts(fonts),
-            styles && this.#resolveStyles(styles),
+            modules && this.resolveModules(modules),
+/*             fonts && this.#addFonts(fonts),
+ */            styles && this.#resolveStyles(styles),
             dinamics && this.#resolveDinamics(dinamics),
             animations && this.#resolveAnimations(animations),
         ])
 
+
         /* local register */
-        
+
         /* return */
         if (!this.#STATE) return null
         this.#STATE = "ready"
         return true
     }
 }
-export default Module
+export default new Module()
