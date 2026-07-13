@@ -1,20 +1,17 @@
-let test = null
+export const require = {
+    helpers: ["css", "dom", "fonts"],
+    dinamics: ["neon"],
+    animations: ["glitch"],
+    styles: { landing: "/app/modules/landing/styles/main.css" },
+    fonts: [
+        { name: "neuropol", src: "/app/src/fonts/neuropol.otf" },
+        { name: "nasa", src: "/app/src/fonts/nasalizationRG.otf" },
+        { name: "nasi", src: "/app/src/fonts/nasi.otf" },
+        { name: "digi", src: "/app/src/fonts/digital-7.ttf" },
+    ]
+}
 
 export const init = async (module) => {
-    const helpers = ["css", "dom", "fonts"]
-
-    const fonts = [
-        { name: "neuropol", src: "/app/src/fonts/neuropol.otf", module: "render" },
-        { name: "nasa", src: "/app/src/fonts/nasalizationRG.otf", module: "render" },
-        { name: "nasi", src: "/app/src/fonts/nasi.otf", module: "render" },
-        { name: "digi", src: "/app/src/fonts/digital-7.ttf", module: "render" },
-    ]
-
-    await module.configure({
-        helpers: helpers,
-        fonts: fonts
-    })
-
     console.log(module)
     const mainBox = module.HELPERS.dom.add({
         element: "div",
