@@ -34,32 +34,49 @@ class ModuleResolver {
  */        return true
     }
 
-    /* modules/json */
-    async #importModule(path) {
-        try {
-            let module = await import(path)
-            return module.default ?? module
-        } catch (error) {
-            console.error(this, `import error ${error} ${path}`)
-            this.#STATE.error = true
-            return null
-        }
-    }
-
-    async #hydrateModule(module) {
-        const dependencies = this.MODULES[module].require || null
-        if (!dependencies || Object.keys(dependencies).length === 0) {
-            console.error(this, `${module} require error`)
-            this.#STATE.error = true
+    /* modules */
+    async #importModules(object, target = null) {
+        const resolveModules = async (path) => {
+            try {
+                let module = await import(path)
+                return module.default ?? module
+            } catch (error) {
+                console.error(this, `import error ${error} ${path}`)
+                this.#STATE.error = true
+                return null
+            }
         }
 
-        let toHydrate = []
-        dependencies.helpers && toHydrate.push(await this.#resolveHelpers(dependencies.helpers))
+        target = target || this.MODULES
+        const promises = Object.entries(object).map(async ([key, value]) => {
+            if (typeof value === "string") {
+                target[key] = await resolveModules(value)
+            }
 
-        await this.#resolve(toHydrate)
+            if (typeof value === "object" && value !== null) {
+                target[key] = {}
+                await this.#importModules(value, target[key])
+            }
+        })
+        await Promise.all(promises)
     }
 
-    async #fetchJSON(path) {
+    async #requireJSON() {
+        let importJSON = null
+
+        Object.entries(this.MODULES).forEach(([key, value]) => {
+            const require = value.require || null
+            if (!require) return
+            if (require.helpers && !this.#JSON.helpers) this.#JSON.helpers = "/framework/config/helpers.json"
+            if (require.animations && !this.#JSON.animations) this.#JSON.animations = "/framework/config/animations.json"
+            if (require.dinamics && !this.#JSON.dinamics) this.#JSON.dinamics = "/framework/config/dinamics.json"
+            if (require.components && !this.#JSON.components) this.#JSON.components = "/framework/config/components.json"
+/*             if (require.helpers || require.animations || require.dinamics || require.components) importJSON = true
+ */        })
+    }
+
+    async #resolveJSON(path) {
+        console.log(path)
         let response
         try {
             response = await fetch(path)
@@ -75,30 +92,51 @@ class ModuleResolver {
             this.#STATE.error = true
             response = null
         }
+        console.log(response)
         return response
     }
 
-    async #resolve(modules) {
-        const resolves = Object.entries(modules).map(async ([key, value]) => {
-            if (typeof value === "string") value.endsWith(".json")
-                ? this.#JSON[key] = await this.#fetchJSON(value)
-                : await (async () => {
+    async #hydrateModule(module) {
+        const dependencies = this.MODULES[module].require || null
+        if (!dependencies || Object.keys(dependencies).length === 0) {
+            console.error(this, `${module} require error`)
+            this.#STATE.error = true
+        }
+
+        const jsonInfo = []
+        dependencies.helpers && jsonInfo.push("helpers")
+        dependencies.styles && jsonInfo.push("styles")
+        dependencies.animations && jsonInfo.push("animations")
+        dependencies.components && jsonInfo.push("components")
+
+
+
+        let toHydrate = []
+        /*         dependencies.helpers && toHydrate.push(await this.#resolveHelpers(dependencies.helpers))
+         */
+/*         await this.#resolve(toHydrate)
+ */    }
+
+
+    /*     async #resolve(object) {
+            console.log(object)
+            const resolves = Object.entries(object).map(async ([key, value]) => {
+                const target = object === this.MODULES ? this.MODULES : this.#JSON
+                if (typeof value === "string" && value.endsWith(".js")) {
+                    console.log("str", value)
                     this.MODULES[key] = await this.#importModule(value)
-                    !this.#STATE.error && await this.#hydrateModule(key)
-                })()
-
-            typeof value === "object" && await this.#resolve(value)
-        })
-        !this.#STATE.error && await Promise.all(resolves)
-    }
-
-    async #infoJSON(helpers, animations, dinamics, components) {
-        if (helpers && !this.#JSON.helpers) this.#JSON["helpers"] = "/framework/config/helpers.json"
-        if (animations && !this.#JSON.animations) this.#JSON["animations"] = "/framework/config/animations.json"
-        if (dinamics && !this.#JSON.dinamics) this.#JSON["dinamics"] = "/framework/config/dinamicsdinamics.json"
-        if (components && !this.#JSON.components) this.#JSON["components"] = "/framework/config/components.json"
-        Object.keys(this.#JSON).length > 0 && await this.#resolve(this.#JSON)
-    }
+                }
+                if (typeof value === "string" && value.endsWith(".json")) {
+                    object[key] = await this.#resolveJSON(value)
+                }
+                if (typeof value === "object") {
+                    console.log("obj")
+                    await this.#resolve(value);
+                }
+            })
+            !this.#STATE.error && await Promise.all(resolves)
+        }
+     */
 
     /* dependencies */
     async #addHelpers(helpers) {
@@ -165,10 +203,10 @@ class ModuleResolver {
 
         /* modules & styles */
         if (!this.#STATE.error) {
-            await Promise.all([
-                this.#resolve(modules),
-                styles && this.#addStyles(styles)
-            ])
+            await this.#importModules(modules)
+            this.#requireJSON()
+            console.log(this.#JSON)
+
             this.#STATE.initialized = true
             this.#STATE.working = false
         }

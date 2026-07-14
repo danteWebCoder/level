@@ -3,11 +3,11 @@ import module from "/framework/dependencies/classes/moduleResolver.js"
 export const init = async () => {
     const modules = {
         render: "/app/modules/landing/visual/render.js",
-/*         logic: {
+        logic: {
             counter: "/app/modules/landing/logic/infoCounters.js",
             events: "/app/modules/landing/logic/events.js"
         }
- */    }
+    }
 
     /* preload sequence */
     await module.init({
