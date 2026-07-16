@@ -1,4 +1,4 @@
-export const require = {
+export const dep = {
     helpers: ["css", "dom", "fonts"],
     dinamics: ["neon"],
     animations: ["glitch"],

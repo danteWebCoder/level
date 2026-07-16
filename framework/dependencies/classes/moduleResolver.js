@@ -1,13 +1,12 @@
 class ModuleResolver {
     NAME = null
     MODULES = {}
-    DEPS = {}
-    REGISTER = { LOCAL: null, GLOBAL: null }
+/*     dep = {}
+ */    REGISTER = { LOCAL: null, GLOBAL: null }
 
     #JSON = {}
     #STATE = {
-        initialized: false,
-        working: false,
+        loaded: false,
         error: false
     }
 
@@ -34,143 +33,111 @@ class ModuleResolver {
  */        return true
     }
 
-    /* modules */
-    async #importModules(object, target = null) {
-        const resolveModules = async (path) => {
-            try {
-                let module = await import(path)
-                return module.default ?? module
-            } catch (error) {
-                console.error(this, `import error ${error} ${path}`)
-                this.#STATE.error = true
-                return null
-            }
+    /* resolves */
+    async #resolveURL(path) {
+        try {
+            let module = await import(path)
+            return module.default ?? module
+        } catch (error) {
+            console.error(this, `import error ${error} ${path}`)
+            this.#STATE.error = true
+            return null
         }
-
-        target = target || this.MODULES
-        const promises = Object.entries(object).map(async ([key, value]) => {
-            if (typeof value === "string") {
-                target[key] = await resolveModules(value)
-            }
-
-            if (typeof value === "object" && value !== null) {
-                target[key] = {}
-                await this.#importModules(value, target[key])
-            }
-        })
-        await Promise.all(promises)
-    }
-
-    async #requireJSON() {
-        let importJSON = null
-
-        Object.entries(this.MODULES).forEach(([key, value]) => {
-            const require = value.require || null
-            if (!require) return
-            if (require.helpers && !this.#JSON.helpers) this.#JSON.helpers = "/framework/config/helpers.json"
-            if (require.animations && !this.#JSON.animations) this.#JSON.animations = "/framework/config/animations.json"
-            if (require.dinamics && !this.#JSON.dinamics) this.#JSON.dinamics = "/framework/config/dinamics.json"
-            if (require.components && !this.#JSON.components) this.#JSON.components = "/framework/config/components.json"
-/*             if (require.helpers || require.animations || require.dinamics || require.components) importJSON = true
- */        })
     }
 
     async #resolveJSON(path) {
-        console.log(path)
         let response
         try {
             response = await fetch(path)
             response = (response && response.ok) && await response.json() || null
+            if (response) return response
+            else {
+                console.error(this, `json not valid: ${path}`)
+                this.#STATE.error = true
+                return null
+            }
         } catch (error) {
             console.error(this, `fecth failed: ${error} ${path}`)
             this.#STATE.error = true
             return null
         }
-
-        if (!response) {
-            console.error(this, `json not valid: ${path}`)
-            this.#STATE.error = true
-            response = null
-        }
-        console.log(response)
-        return response
     }
 
-    async #hydrateModule(module) {
-        const dependencies = this.MODULES[module].require || null
-        if (!dependencies || Object.keys(dependencies).length === 0) {
-            console.error(this, `${module} require error`)
-            this.#STATE.error = true
-        }
-
-        const jsonInfo = []
-        dependencies.helpers && jsonInfo.push("helpers")
-        dependencies.styles && jsonInfo.push("styles")
-        dependencies.animations && jsonInfo.push("animations")
-        dependencies.components && jsonInfo.push("components")
-
-
-
-        let toHydrate = []
-        /*         dependencies.helpers && toHydrate.push(await this.#resolveHelpers(dependencies.helpers))
-         */
-/*         await this.#resolve(toHydrate)
- */    }
-
-
-    /*     async #resolve(object) {
-            console.log(object)
-            const resolves = Object.entries(object).map(async ([key, value]) => {
-                const target = object === this.MODULES ? this.MODULES : this.#JSON
-                if (typeof value === "string" && value.endsWith(".js")) {
-                    console.log("str", value)
-                    this.MODULES[key] = await this.#importModule(value)
+    async #resolveObject(object) {
+        await Promise.all(Object.entries(object).map(async ([key, value]) => {
+            if (typeof value === "string") {
+                if (value.endsWith(".json")) object[key] = await this.#resolveJSON(value)
+                if (value.endsWith(".js")) {
+                    object[key] = await this.#resolveURL(value)
+                    await this.#resolveMODULE(object[key])
                 }
-                if (typeof value === "string" && value.endsWith(".json")) {
-                    object[key] = await this.#resolveJSON(value)
-                }
-                if (typeof value === "object") {
-                    console.log("obj")
-                    await this.#resolve(value);
-                }
-            })
-            !this.#STATE.error && await Promise.all(resolves)
-        }
-     */
+            }
+            if (typeof value === "object" && value !== null) {
+                await this.#resolveObject(value)
+            }
+        }))
+    }
+
+    /* modules */
+    async #resolveINFO(module) {
+        const dep = module.dep || null
+        if (!dep) return null
+
+        const jsonInfo = ["helpers", "animations", "dinamics", "components"]
+        let importJSON = null
+        dep && await Promise.all(jsonInfo.map(async (item) => {
+            if (dep[item] && !this.#JSON[item]) this.#JSON[item] = await this.#resolveJSON(`/framework/config/${item}.json`)
+        }))
+    }
+
+    async #resolveMODULE(module) {
+        await this.#resolveINFO(module)
+
+        await Promise.all([
+            module.dep?.helpers && await this.#addDependencies(module, "helpers"),
+            module.dep?.animations && await this.#addDependencies(module, "animations"),
+            module.dep?.dinamics && await this.#addDependencies(module, "dinamics"),   
+            module.dep?.components && await this.#addDependencies(module, "components")                       
+        ])
+    }
 
     /* dependencies */
-    async #addHelpers(helpers) {
-        const resolveHelpers = {}
-        helpers.forEach(item => {
-            const helperPath = this.#JSON.helpers[item] || null
-            if (!helperPath) {
-                console.error(`no HELPER ${item.toUpperCase()} found`, this)
-                this.#STATE = null
+    async #addDependencies(module, mode) {
+
+        const initialDeps = [...module.dep[mode]]
+        module.dep[mode] = {}
+
+        initialDeps.forEach(item => {
+            const path = this.#JSON[mode][item] || null
+            if (!path) {
+                console.error(`no ${mode.toUpperCase()} ${item.toUpperCase()} found`, this)
+                this.#STATE.error = null
             }
-            resolveHelpers[item] = helperPath
+            module.dep[mode][item] = path
         })
-
-        this.#STATE && await this.RESOLVE(resolveHelpers)
-        Object.entries(resolveHelpers).forEach(([key, value]) => {
-            !this.HELPERS[key] && (this.HELPERS[key] = value)
-        })
+        !this.#STATE.error && await this.#resolveObject(module.dep[mode])
     }
 
-    #addStyles(styles) {
-        const injectLink = (key, value) => {
-            const newLink = document.createElement("link")
-            newLink.setAttribute("data-module", this.NAME)
-            newLink.setAttribute("data-name", key)
-            newLink.href = value
-            newLink.rel = "stylesheet"
-            document.head.appendChild(newLink)
+    async #addAnimations(module) {
+
+    }
+    /*    
+    
+        #addStyles(styles) {
+            const injectLink = (key, value) => {
+                const newLink = document.createElement("link")
+                newLink.setAttribute("data-module", this.NAME)
+                newLink.setAttribute("data-name", key)
+                newLink.href = value
+                newLink.rel = "stylesheet"
+                document.head.appendChild(newLink)
+            }
+    
+            Object.entries(styles).forEach(([key, value]) => {
+                injectLink(key, value)
+            })
         }
-
-        Object.entries(styles).forEach(([key, value]) => {
-            injectLink(key, value)
-        })
-    }
-
+     */
 
     initINFO() {
         console.info(this, `\nMODULERESOLVER {
@@ -187,13 +154,14 @@ class ModuleResolver {
         modules = null,
         styles = null,
     }) {
-        if (this.#STATE.initialized) {
+        if (this.#STATE.loaded || this.#STATE.loaded === "working") {
             console.log(this, "ModuleResolver instance already initialized", this.#STATE)
             return null
         }
         /* reasign props */
-        this.#STATE.working = true
+        this.#STATE.loaded = "working"
         this.NAME = name
+        this.MODULES = modules
 
         /* validate params */
         if (!this.#validateInit(name, modules)) {
@@ -203,12 +171,11 @@ class ModuleResolver {
 
         /* modules & styles */
         if (!this.#STATE.error) {
-            await this.#importModules(modules)
-            this.#requireJSON()
-            console.log(this.#JSON)
+            await this.#resolveObject(this.MODULES)
 
-            this.#STATE.initialized = true
-            this.#STATE.working = false
+
+
+            this.#STATE.loaded = true
         }
     }
 }
