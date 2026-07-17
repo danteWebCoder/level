@@ -12,8 +12,7 @@ export const dep = {
 }
 
 export const init = async (module) => {
-    console.log(module)
-    const mainBox = module.HELPERS.dom.add({
+    const mainBox = module.dep.helpers.DOM.add({
         element: "div",
         css: ["landingBox"],
         node: document.body
@@ -69,7 +68,7 @@ export const init = async (module) => {
             </ul>
         </section>
     `
-/*     module.DINAMICS.neon.light({
+    module.dep.dinamics.NEON.light({
         config: {
             element: document.querySelector("#neonTitle"),
             color: "white",
@@ -77,7 +76,7 @@ export const init = async (module) => {
         }
     })
 
-    module.ANIMATIONS.glitch.random({
+    module.dep.animations.GLITCH.random({
         config: {
             element: document.querySelector("#neonTitle"),
             initial_delay: 2000,
@@ -86,4 +85,4 @@ export const init = async (module) => {
             shadow: "0 0 2px rgba(220, 255, 255, 0.5)"
         }
     })
- */}
+}
