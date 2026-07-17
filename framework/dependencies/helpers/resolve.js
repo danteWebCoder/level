@@ -36,7 +36,7 @@ const getExtension = (path) => {
     return extension
 }
 
-export const get = async (object = null) => {
+export const process = async (object = null) => {
     if (!object) {
         console.error("RESOLVE helper: call without object to resolve")
         return null

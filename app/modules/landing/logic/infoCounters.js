@@ -1,10 +1,15 @@
-export const init = async (module) => {
-    const info = await module.RESOLVE({
+export const dep = {
+    helpers: ["resolve"]
+}
+
+export const init = async () => {
+    const info = {
         helpers: "/framework/config/helpers.json",
-        styles: "/framework/config/dinamicStyles.json",
+        styles: "/framework/config/dinamics.json",
         animations: "/framework/config/animations.json",
         components: "/framework/config/components.json"
-    })
+    }
+    await dep.helpers.RESOLVE.process(info)
 
     const helpersNum = Object.keys(info.helpers).length || 0
     const stylesNum = Object.keys(info.styles).length || 0

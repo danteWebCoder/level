@@ -1,5 +1,5 @@
 export const dep = {
-    helpers: ["css", "dom", "fonts"],
+    helpers: ["css", "dom"],
     dinamics: ["neon"],
     animations: ["glitch"],
     styles: { landing: "/app/modules/landing/styles/main.css" },
@@ -11,8 +11,8 @@ export const dep = {
     ]
 }
 
-export const init = async (module) => {
-    const mainBox = module.dep.helpers.DOM.add({
+export const init = async () => {
+    const mainBox = dep.helpers.DOM.add({
         element: "div",
         css: ["landingBox"],
         node: document.body
@@ -68,7 +68,7 @@ export const init = async (module) => {
             </ul>
         </section>
     `
-    module.dep.dinamics.NEON.light({
+    dep.dinamics.NEON.light({
         config: {
             element: document.querySelector("#neonTitle"),
             color: "white",
@@ -76,13 +76,13 @@ export const init = async (module) => {
         }
     })
 
-    module.dep.animations.GLITCH.random({
+    dep.animations.GLITCH.random({
         config: {
             element: document.querySelector("#neonTitle"),
             initial_delay: 2000,
-            delay: 400,
-            color: "rgb(50, 50, 50)",
-            shadow: "0 0 2px rgba(220, 255, 255, 0.5)"
+            delay: 200,
+            color: "rgb(40, 40, 40)",
+            shadow: "0 0 2px rgba(220, 255, 255, 0.3)"
         }
     })
 }

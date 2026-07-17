@@ -17,7 +17,7 @@ export const init = async () => {
     })
 
     /* init sequence */
-    landing.MODULES.render.init(landing.MODULES.render)
-/*     module.MODULES.logic.counter.init(module)
-    module.MODULES.logic.events.init(module)
- */}
+    landing.MODULES.render.init()
+    landing.MODULES.logic.counter.init()
+    landing.MODULES.logic.events.init()
+}

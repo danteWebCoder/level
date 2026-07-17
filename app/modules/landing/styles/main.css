@@ -62,8 +62,8 @@ body {
                 margin-bottom: 40px;
                 font-family: "nasa";
                 font-size: 26px;
+                font-weight: bolder;
                 color: rgb(40, 40, 40);
-                text-shadow: 0 0 2px grey;
                 letter-spacing: 10px;
             }
 
