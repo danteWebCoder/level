@@ -5,7 +5,7 @@ export const dep = {
 export const init = async () => {
     const info = {
         helpers: "/framework/config/helpers.json",
-        styles: "/framework/config/dinamics.json",
+        styles: "/framework/config/dynamics.json",
         animations: "/framework/config/animations.json",
         components: "/framework/config/components.json"
     }

@@ -2,54 +2,47 @@ class ModuleResolver {
     NAME = null
     MODULES = {}
     REGISTER = { LOCAL: null, GLOBAL: null }
-
-    #JSON = {}
-    #STATE = {
+    STATE = {
         loaded: false,
-        error: false
+        error: []
     }
 
+    #JSON = {}
+
     #validateInit(name, modules) {
-        if (!name || !modules) {
-            console.error(this, "config error")
-            return null
-        }
-
-        if (typeof name !== "string") {
-            console.error(this, "name error")
-            return null
-        }
-
-        if (typeof modules !== "object") {
-            console.error(this, "modules error")
-            return null
-        }
-
-/*         if (typeof styles !== "object") {
-            console.error(this, "styles error")
-            return null
-        }
- */        return true
+        if (!name || !modules) this.STATE.error.push("config error")
+        if (typeof name !== "string") this.STATE.error.push("config name error")
+        if (typeof modules !== "object") this.STATE.error.push("config modules error")
     }
 
     /* resolves*/
-    async #resolveURL(path) {
+    async #test(path) {
         try {
-            const module = await import(path)
-            return module?.default ?? module
-        } catch (error) {
-            throw new Error(`import error: ${path} - ${error.message}`)
+            const test = await fetch(path, { method: 'HEAD' })
+            return test.ok
+        } catch (e) {
+            return null
         }
     }
 
-    async #resolveJSON(path) {
-        const response = await fetch(path)
-        if (!response.ok) throw new Error(`JSON failed: cant fetch ${path}`)
-        try {
-            return await response.json()
-        } catch (error) {
-            throw new Error(`JSON failed: ${error.message}`)
+    async #resolveURL(path) {
+        const test = await this.#test(path)
+        if (!test) {
+            this.STATE.error.push(`ERROR: import module - ${path}`)
+            return null
         }
+        const module = await import(path)
+        return module?.default || module
+    }
+
+    async #resolveJSON(path) {
+        const test = await this.#test(path)
+        if (!test) {
+            this.STATE.error.push(`ERROR: fetch json - ${path}`)
+            return null
+        }
+        const response = await fetch(path)
+        return await response.json()
     }
 
     async #resolveObject(object) {
@@ -57,8 +50,10 @@ class ModuleResolver {
             if (typeof value === "string") {
                 if (value.endsWith(".json")) object[key] = await this.#resolveJSON(value)
                 if (value.endsWith(".js")) {
-                    object[key] = await this.#resolveURL(value)
-                    await this.#resolveMODULE(object[key])
+                    const imported = await this.#resolveURL(value)
+                    object[key] = imported
+                    object[key].dep && this.#validateModuleDEP(imported)
+                    !this.STATE.error.length && await this.#resolveMODULE(object[key])
                 }
             }
             if (typeof value === "object" && value !== null) {
@@ -67,7 +62,24 @@ class ModuleResolver {
         }))
     }
 
-    /* modules dependencies*/
+    /* modules */
+    #validateModuleDEP(module) {
+        if (module.dep) {
+            const addError = (item) => this.STATE.error.push({ module: module, error: `${item} format error` })
+
+            const arrayType = ["helpers", "animations", "dynamics", "components", "fonts"]
+            arrayType.forEach(item => {
+                const type = module.dep[item] || null; /* without ; dont detect type */
+                (type && !Array.isArray(type)) && addError(item)
+            })
+
+            const objectType = ["styles"]
+            objectType.forEach(item => {
+                (module.dep[item] && typeof module.dep[item] !== "object") && addError(item)
+            })
+        }
+    }
+
     #injectLink = (href) => {
         const newLink = document.createElement("link")
         newLink.dataset.module = this.NAME
@@ -78,9 +90,9 @@ class ModuleResolver {
     }
 
     #addFont(fonts) {
-        const addFontStyle = (font, name) => {
+        const addFontStyle = (font) => {
             const fontStyle = document.createElement("style")
-            fontStyle.dataset.module = name
+            fontStyle.dataset.module = this.NAME
             fontStyle.dataset.font = font.name
             document.head.appendChild(fontStyle)
             return fontStyle
@@ -98,7 +110,7 @@ class ModuleResolver {
         fonts.forEach(item => {
             const ext = item.src.split(".").pop()
             const format = formatMap[ext] || ext
-            const fontStyle = addFontStyle(item, name)
+            const fontStyle = addFontStyle(item)
 
             fontStyle.textContent += `
             @font-face {
@@ -110,19 +122,20 @@ class ModuleResolver {
     }
 
     async #resolveMODULE(module) {
-        if (module.dep) {
+        if (module?.dep) {
             /* styles */
             module.dep.styles && Object.entries(module.dep.styles).forEach(([key, value]) => this.#injectLink(value))
             /* fonts */
             module.dep.fonts && this.#addFont(module.dep.fonts)
-            /* helpers, animations, dinamics, components */
-            const dinamicDeps = ["helpers", "animations", "dinamics", "components"]
+            /* helpers, animations, dynamics, components */
+            const dinamicDeps = ["helpers", "animations", "dynamics", "components"]
             await Promise.all(dinamicDeps.map(async (item) => {
                 if (!this.#JSON[item]) {
                     this.#JSON[item] = await this.#resolveJSON(`/framework/config/${item}.json`)
                 }
                 module.dep[item] && await this.#addDependencies(module, item)
             }))
+            return module
         }
     }
 
@@ -153,38 +166,29 @@ class ModuleResolver {
         modules = null,
         styles = null,
     }) {
-        if ((this.#STATE.loaded === true && !this.#STATE.error) || this.#STATE.loaded === "working") {
-            console.log(this, "ModuleResolver instance already initialized", this.#STATE)
+        if ((this.STATE.loaded === true && !this.STATE.error.length) || this.STATE.loaded === "working") {
+            console.log(this, "ModuleResolver instance already initialized", this.STATE)
             return null
         }
 
-        if (!this.#validateInit(name, modules)) {
+        this.#validateInit(name, modules)
+        if (this.STATE.error.length > 0) {
             this.initINFO()
-            this.#STATE.error = true
             return null
         }
 
-        this.#STATE.loaded = "working"
+        this.STATE.loaded = "working"
         this.NAME = name
         this.MODULES = modules
 
-        try {
-            await this.#resolveObject(this.MODULES)
-            this.#STATE.loaded = true
-            return this
-        } catch (error) {
-            console.error(this.NAME, "error resolving module load", error.message)
-            this.NAME = null
-            this.MODULES = {}
-            this.#JSON = {}
-
-            this.#STATE.error = true
-            this.#STATE.loaded = false
+        await this.#resolveObject(this.MODULES)
+        if (this.STATE.error.length > 0) {
+            this.STATE.loaded = null
+            this.STATE.error.forEach(item => console.error(this, item))
+            return null
         }
-    }
-
-    destroy() {
-
+        this.STATE.loaded = true
+        return this
     }
 }
-export default new ModuleResolver()
+export default ModuleResolver

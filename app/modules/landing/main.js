@@ -1,4 +1,4 @@
-import landing from "/framework/dependencies/classes/moduleResolver.js"
+import moduleResolver from "/framework/dependencies/classes/moduleResolver.js"
 
 export const init = async () => {
     const modules = {
@@ -10,13 +10,16 @@ export const init = async () => {
     }
 
     /* preload sequence */
+    const landing = new moduleResolver()
     await landing.init({
         name: "landing",
         modules: modules,
-        register: null
+        register: null,
     })
 
     /* init sequence */
+    console.log(landing)
+    if (!landing.STATE.loaded) return null
     landing.MODULES.render.init()
     landing.MODULES.logic.counter.init()
     landing.MODULES.logic.events.init()

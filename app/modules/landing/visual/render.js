@@ -1,6 +1,6 @@
 export const dep = {
     helpers: ["css", "dom"],
-    dinamics: ["neon"],
+    dynamics: ["neon"],
     animations: ["glitch"],
     styles: { landing: "/app/modules/landing/styles/main.css" },
     fonts: [
@@ -68,7 +68,7 @@ export const init = async () => {
             </ul>
         </section>
     `
-    dep.dinamics.NEON.light({
+    dep.dynamics.NEON.light({
         config: {
             element: document.querySelector("#neonTitle"),
             color: "white",
@@ -76,7 +76,7 @@ export const init = async () => {
         }
     })
 
-    dep.animations.GLITCH.random({
+/*     dep.animations.GLITCH.random({
         config: {
             element: document.querySelector("#neonTitle"),
             initial_delay: 2000,
@@ -85,4 +85,4 @@ export const init = async () => {
             shadow: "0 0 2px rgba(220, 255, 255, 0.3)"
         }
     })
-}
+ */}
