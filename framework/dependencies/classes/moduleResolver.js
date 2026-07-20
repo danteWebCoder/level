@@ -45,118 +45,95 @@ class ModuleResolver {
         return await response.json()
     }
 
-    async #resolveObject(object) {
+    async #resolveObject(object, typeModule = null) {
         await Promise.all(Object.entries(object).map(async ([key, value]) => {
             if (typeof value === "string") {
                 if (value.endsWith(".json")) object[key] = await this.#resolveJSON(value)
                 if (value.endsWith(".js")) {
-                    const imported = await this.#resolveURL(value)
-                    object[key] = imported
-                    object[key].dep && this.#validateModuleDEP(imported)
-                    !this.STATE.error.length && await this.#resolveMODULE(object[key])
+                    object[key] = await this.#resolveURL(value)
+                    typeModule && await this.#resolveMODULE(object[key])
                 }
             }
             if (typeof value === "object" && value !== null) {
-                await this.#resolveObject(value)
+                const dinamicDeps = ["helpers", "animations", "dynamics", "components", "fonts", "css"]
+                await this.#resolveObject(value, dinamicDeps.includes(key) ? false : true)
             }
         }))
     }
 
     /* modules */
     #validateModuleDEP(module) {
-        if (module.dep) {
-            const addError = (item) => this.STATE.error.push({ module: module, error: `${item} format error` })
+        const addError = (item) => this.STATE.error.push({ module: module, error: `${item} format error` })
 
-            const arrayType = ["helpers", "animations", "dynamics", "components", "fonts"]
-            arrayType.forEach(item => {
-                const type = module.dep[item] || null; /* without ; dont detect type */
-                (type && !Array.isArray(type)) && addError(item)
-            })
-
-            const objectType = ["styles"]
-            objectType.forEach(item => {
-                (module.dep[item] && typeof module.dep[item] !== "object") && addError(item)
-            })
-        }
-    }
-
-    #injectLink = (href) => {
-        const newLink = document.createElement("link")
-        newLink.dataset.module = this.NAME
-        newLink.dataset.type = "CSS"
-        newLink.rel = "stylesheet"
-        newLink.href = href
-        document.head.appendChild(newLink)
-    }
-
-    #addFont(fonts) {
-        const addFontStyle = (font) => {
-            const fontStyle = document.createElement("style")
-            fontStyle.dataset.module = this.NAME
-            fontStyle.dataset.font = font.name
-            document.head.appendChild(fontStyle)
-            return fontStyle
-        }
-
-        const formatMap = {
-            woff2: "woff2",
-            woff: "woff",
-            ttf: "truetype",
-            otf: "opentype",
-            eot: "embedded-opentype",
-            svg: "svg"
-        }
-
-        fonts.forEach(item => {
-            const ext = item.src.split(".").pop()
-            const format = formatMap[ext] || ext
-            const fontStyle = addFontStyle(item)
-
-            fontStyle.textContent += `
-            @font-face {
-                font-family: "${item.name}";
-                src: url("${item.src}") format("${format}");
-            }
-        `
+        const arrayType = ["helpers", "animations", "dynamics", "components"]
+        arrayType.forEach(item => {
+            const type = module.dep[item] || null; /* sin ';' no detecta la declaracion */
+            (type && !Array.isArray(type)) && addError(item)
+        })
+        const objectType = ["css", "fonts"] /* mas props en el futuro? */
+        objectType.forEach(item => {
+            (module.dep[item] && typeof module.dep[item] !== "object") && addError(item)
         })
     }
 
-    async #resolveMODULE(module) {
+    async #resolveDEPS(module) {
         if (module?.dep) {
-            /* styles */
-            module.dep.styles && Object.entries(module.dep.styles).forEach(([key, value]) => this.#injectLink(value))
-            /* fonts */
-            module.dep.fonts && this.#addFont(module.dep.fonts)
+            /* styles & fonts */
+            const lostHelpers = ["css", "fonts"]
+            lostHelpers.forEach(item => {
+                if (module.dep[item]) {
+                    !module.dep.helpers && (module.dep["helpers"] = [])
+                    !module.dep.helpers.includes(item) && module.dep.helpers.push(item)
+                }
+            })
             /* helpers, animations, dynamics, components */
             const dinamicDeps = ["helpers", "animations", "dynamics", "components"]
             await Promise.all(dinamicDeps.map(async (item) => {
                 if (!this.#JSON[item]) {
                     this.#JSON[item] = await this.#resolveJSON(`/framework/config/${item}.json`)
                 }
-                module.dep[item] && await this.#addDependencies(module, item)
+                module.dep[item] && await this.#resolveDEPENDENCIES(module, item)
             }))
             return module
         }
     }
 
-    async #addDependencies(module, mode) {
+    async #resolveMODULE(module) {
+        let moduleResolved
+        module.dep && this.#validateModuleDEP(module)
+        !this.STATE.error.length && (moduleResolved = await this.#resolveDEPS(module))
+        moduleResolved?.dep?.fonts && this.#injectCSS(moduleResolved, "fonts")
+        moduleResolved?.dep?.css && this.#injectCSS(moduleResolved, "css")
+    }
+
+    /* module dependencies */
+    async #resolveDEPENDENCIES(module, mode) {
         const initialDeps = [...module.dep[mode]]
         module.dep[mode] = {}
 
         initialDeps.forEach(item => {
             const path = this.#JSON[mode][item] || null
-            if (!path) throw new Error(`${item} not valid dependency`)
+            !path && this.STATE.error.push("ERROR - lost JSON list")
             module.dep[mode][item.toUpperCase()] = path
         })
-        await this.#resolveObject(module.dep[mode])
+        !this.STATE.error.length && await this.#resolveObject(module.dep[mode])
     }
 
+    /* apply styles and fonts */
+    #injectCSS(module, mode) {
+        module.dep[mode].forEach(item => {
+            if (!item.name || !item.src) {
+                this.STATE.error.push(`${item} /nERROR: ${mode} format`)
+            }
+        })
+        module.dep.helpers[mode.toUpperCase()].add({ [mode]: module.dep[mode], module: this.NAME })
+    }
+
+    /* info */
     initINFO() {
         console.info(this, `\nMODULERESOLVER {
             init ({
-                name:          string - module name used for dom injects
-                modules:       object - scripts used in module 
-                register:
+
             })
         }`)
     }
@@ -180,8 +157,9 @@ class ModuleResolver {
         this.STATE.loaded = "working"
         this.NAME = name
         this.MODULES = modules
+        await this.#resolveObject(this.MODULES, true)
 
-        await this.#resolveObject(this.MODULES)
+
         if (this.STATE.error.length > 0) {
             this.STATE.loaded = null
             this.STATE.error.forEach(item => console.error(this, item))

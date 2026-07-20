@@ -1,20 +1,21 @@
 export const dep = {
-    helpers: ["css", "dom"],
-    dynamics: ["neon"],
-    animations: ["glitch"],
-    styles: { landing: "/app/modules/landing/styles/main.css" },
+    css: [{ name: "landing", src: "/app/modules/landing/styles/main.css" }],
     fonts: [
         { name: "neuropol", src: "/app/src/fonts/neuropol.otf" },
         { name: "nasa", src: "/app/src/fonts/nasalizationRG.otf" },
         { name: "nasi", src: "/app/src/fonts/nasi.otf" },
         { name: "digi", src: "/app/src/fonts/digital-7.ttf" },
-    ]
+    ],
+    helpers: ["dom"],
+    dynamics: ["neon"],
+    animations: ["glitch"]
 }
 
 export const init = async () => {
     const mainBox = dep.helpers.DOM.add({
         element: "div",
         css: ["landingBox"],
+        id: "landingBox",
         node: document.body
     })
 

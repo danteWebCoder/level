@@ -1,38 +1,25 @@
-const addLink = (name, value, moduleName) => {
+const addLink = (item, module = null) => {
     const newLink = document.createElement("link")
-    newLink.setAttribute("data-module", moduleName)
-    newLink.href = value
+    newLink.setAttribute("data-module", module)
+    newLink.href = item.src
     newLink.rel = "stylesheet"
     document.head.appendChild(newLink)
 }
 
 export const add = ({
-    styles = null,
-    moduleName = null
+    css = null,
+    module = null
 }) => {
-    if (!styles) {
-        console.error("no styles in CSS ADD")
+    if (!css) {
+        console.error("HELPER CSS ADD - no styles")
         return null
     }
 
-    if (!moduleName) {
-        console.error("no name in CSS ADD")
+    if (!module) {
+        console.error("HELPER CSS ADD - no name")
         return null
     }
 
-    Object.values(styles).forEach(value => {
-        addLink(name, value, moduleName)
-    })
+    css.forEach(item => addLink(item, module))
     return true
 }
-
-/* export const addCustom = ({
-    styles = null,
-    moduleName = null
-}) => {
-    styles.forEach(item => {
-        const linkName = moduleName + "_CUSTOM_" + item.name
-        addLink(item.name, item.path, linkName)
-    })
-}
- */

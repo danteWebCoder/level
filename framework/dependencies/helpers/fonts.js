@@ -1,6 +1,6 @@
-const addFontStyle = (font, name) => {
+const addFontStyle = (font, module = null) => {
     const fontStyle = document.createElement("style")
-    fontStyle.dataset.module = name
+    module && (fontStyle.dataset.module = module)
     fontStyle.dataset.font = font.name
     document.head.appendChild(fontStyle)
     return fontStyle
@@ -8,7 +8,7 @@ const addFontStyle = (font, name) => {
 
 export const add = ({
     fonts = null,
-    name = null
+    module = null
 }) => {
 
     const formatMap = {
@@ -20,15 +20,15 @@ export const add = ({
         svg: "svg"
     }
 
-    fonts.forEach(item => {
-        const ext = item.src.split(".").pop()
+    fonts.forEach((font) => {
+        const ext = font.src.split(".").pop()
         const format = formatMap[ext] || ext
-        const fontStyle = addFontStyle(item, name)
+        const fontStyle = addFontStyle(font, module)
 
-        fontStyle.textContent += `
+        fontStyle.textContent = `
             @font-face {
-                font-family: "${item.name}";
-                src: url("${item.src}") format("${format}");
+                font-family: "${font.name}";
+                src: url("${font.src}") format("${format}");
             }
         `
     })

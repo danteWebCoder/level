@@ -21,6 +21,6 @@ export const init = async () => {
     console.log(landing)
     if (!landing.STATE.loaded) return null
     landing.MODULES.render.init()
-    landing.MODULES.logic.counter.init()
+/*     landing.MODULES.logic.counter.init()
     landing.MODULES.logic.events.init()
-}
+ */}
