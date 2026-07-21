@@ -9,14 +9,14 @@ class ModuleResolver {
 
     #JSON = {}
 
-    #validateInit(name, modules) {
+    #INIT_validate(name, modules) {
         if (!name || !modules) this.STATE.error.push("config error")
         if (typeof name !== "string") this.STATE.error.push("config name error")
         if (typeof modules !== "object") this.STATE.error.push("config modules error")
     }
 
     /* resolves*/
-    async #test(path) {
+    async #TEST_import(path) {
         try {
             const test = await fetch(path, { method: 'HEAD' })
             return test.ok
@@ -25,8 +25,8 @@ class ModuleResolver {
         }
     }
 
-    async #resolveURL(path) {
-        const test = await this.#test(path)
+    async #URL_resolve(path) {
+        const test = await this.#TEST_import(path)
         if (!test) {
             this.STATE.error.push(`ERROR: import module - ${path}`)
             return null
@@ -35,8 +35,8 @@ class ModuleResolver {
         return module?.default || module
     }
 
-    async #resolveJSON(path) {
-        const test = await this.#test(path)
+    async #JSON_resolve(path) {
+        const test = await this.#TEST_import(path)
         if (!test) {
             this.STATE.error.push(`ERROR: fetch json - ${path}`)
             return null
@@ -45,24 +45,36 @@ class ModuleResolver {
         return await response.json()
     }
 
-    async #resolveObject(object, typeModule = null) {
+    async #OBJECT_resolve(object, typeModule = null) {
         await Promise.all(Object.entries(object).map(async ([key, value]) => {
             if (typeof value === "string") {
-                if (value.endsWith(".json")) object[key] = await this.#resolveJSON(value)
+                if (value.endsWith(".json")) object[key] = await this.#JSON_resolve(value)
                 if (value.endsWith(".js")) {
-                    object[key] = await this.#resolveURL(value)
-                    typeModule && await this.#resolveMODULE(object[key])
+                    object[key] = await this.#URL_resolve(value)
+                    typeModule && await this.#module_resolve(object[key])
                 }
             }
             if (typeof value === "object" && value !== null) {
                 const dinamicDeps = ["helpers", "animations", "dynamics", "components", "fonts", "css"]
-                await this.#resolveObject(value, dinamicDeps.includes(key) ? false : true)
+                await this.#OBJECT_resolve(value, dinamicDeps.includes(key) ? false : true)
             }
         }))
     }
 
     /* modules */
-    #validateModuleDEP(module) {
+    async #moduleJSON_add(module, mode) {
+        const initialDeps = [...module.dep[mode]]
+        module.dep[mode] = {}
+
+        initialDeps.forEach(item => {
+            const path = this.#JSON[mode][item] || null
+            !path && this.STATE.error.push("ERROR - lost JSON list")
+            module.dep[mode][item.toUpperCase()] = path
+        })
+        !this.STATE.error.length && await this.#OBJECT_resolve(module.dep[mode])
+    }
+
+    #moduleDEP_validate(module) {
         const addError = (item) => this.STATE.error.push({ module: module, error: `${item} format error` })
 
         const arrayType = ["helpers", "animations", "dynamics", "components"]
@@ -76,7 +88,7 @@ class ModuleResolver {
         })
     }
 
-    async #resolveDEPS(module) {
+    async #moduleDEPS_resolve(module) {
         if (module?.dep) {
             /* styles & fonts */
             const lostHelpers = ["css", "fonts"]
@@ -90,33 +102,20 @@ class ModuleResolver {
             const dinamicDeps = ["helpers", "animations", "dynamics", "components"]
             await Promise.all(dinamicDeps.map(async (item) => {
                 if (!this.#JSON[item]) {
-                    this.#JSON[item] = await this.#resolveJSON(`/framework/config/${item}.json`)
+                    this.#JSON[item] = await this.#JSON_resolve(`/framework/config/${item}.json`)
                 }
-                module.dep[item] && await this.#resolveDEPENDENCIES(module, item)
+                module.dep[item] && await this.#moduleJSON_add(module, item)
             }))
             return module
         }
     }
 
-    async #resolveMODULE(module) {
+    async #module_resolve(module) {
         let moduleResolved
-        module.dep && this.#validateModuleDEP(module)
-        !this.STATE.error.length && (moduleResolved = await this.#resolveDEPS(module))
+        module.dep && this.#moduleDEP_validate(module)
+        !this.STATE.error.length && (moduleResolved = await this.#moduleDEPS_resolve(module))
         moduleResolved?.dep?.fonts && this.#injectCSS(moduleResolved, "fonts")
         moduleResolved?.dep?.css && this.#injectCSS(moduleResolved, "css")
-    }
-
-    /* module dependencies */
-    async #resolveDEPENDENCIES(module, mode) {
-        const initialDeps = [...module.dep[mode]]
-        module.dep[mode] = {}
-
-        initialDeps.forEach(item => {
-            const path = this.#JSON[mode][item] || null
-            !path && this.STATE.error.push("ERROR - lost JSON list")
-            module.dep[mode][item.toUpperCase()] = path
-        })
-        !this.STATE.error.length && await this.#resolveObject(module.dep[mode])
     }
 
     /* apply styles and fonts */
@@ -148,7 +147,7 @@ class ModuleResolver {
             return null
         }
 
-        this.#validateInit(name, modules)
+        this.#INIT_validate(name, modules)
         if (this.STATE.error.length > 0) {
             this.initINFO()
             return null
@@ -157,7 +156,7 @@ class ModuleResolver {
         this.STATE.loaded = "working"
         this.NAME = name
         this.MODULES = modules
-        await this.#resolveObject(this.MODULES, true)
+        await this.#OBJECT_resolve(this.MODULES, true)
 
 
         if (this.STATE.error.length > 0) {
