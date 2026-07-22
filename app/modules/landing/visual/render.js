@@ -6,7 +6,7 @@ export const dep = {
         { name: "nasi", src: "/app/src/fonts/nasi.otf" },
         { name: "digi", src: "/app/src/fonts/digital-7.ttf" },
     ],
-    helpers: ["dom"],
+    helpers: ["dom", "css", "fonts"],
     dynamics: ["neon"],
     animations: ["glitch"]
 }

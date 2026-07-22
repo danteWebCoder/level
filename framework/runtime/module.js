@@ -1,20 +1,25 @@
+import { config } from "/framework/config/level.js"
+import registry from "/framework/runtime/registry.js"
+
 class ModuleResolver {
     NAME = null
     MODULES = {}
-    REGISTER = {}
+    REGISTRY = {
+        local: {
+
+        }
+    }
     STATE = {
         loaded: false,
         error: []
     }
 
     #JSON = {}
-    REGISTER = null
 
-    #INIT_validate(name, modules, register) {
-        if (!name || !modules || !register) this.STATE.error.push("INIT config error")
+    #INIT_validate(name, modules) {
+        if (!name || !modules) this.STATE.error.push("INIT config error")
         if (typeof name !== "string") this.STATE.error.push("INIT config name error")
         if (typeof modules !== "object") this.STATE.error.push("INIT config modules error")
-        if (typeof register !== "boolean") this.STATE.error.push("INIT config register error")
     }
 
     /* resolves*/
@@ -52,8 +57,8 @@ class ModuleResolver {
             if (typeof value === "string") {
                 if (value.endsWith(".json")) object[key] = await this.#JSON_resolve(value)
                 if (value.endsWith(".js")) {
-                    object[key] = await this.#URL_resolve(value)
-                    typeModule && await this.#module_resolve(object[key])
+                    const module = object[key] = await this.#URL_resolve(value)
+                    if (typeModule && module.dep) await this.#module_resolve(module)
                 }
             }
             if (typeof value === "object" && value !== null) {
@@ -64,7 +69,7 @@ class ModuleResolver {
     }
 
     /* modules */
-    async #moduleJSON_add(module, mode) {
+    async #add_JSON(module, mode) {
         const initialDeps = [...module.dep[mode]]
         module.dep[mode] = {}
 
@@ -76,7 +81,7 @@ class ModuleResolver {
         !this.STATE.error.length && await this.#OBJECT_resolve(module.dep[mode])
     }
 
-    #moduleDEP_validate(module) {
+    #validate_DEPS(module) {
         const addError = (item) => this.STATE.error.push({ module: module, error: `${item} format error` })
 
         const arrayType = ["helpers", "animations", "dynamics", "components"]
@@ -90,67 +95,60 @@ class ModuleResolver {
         })
     }
 
-    async #moduleDEPS_resolve(module) {
-        if (module?.dep) {
-            /* styles & fonts */
-            const lostHelpers = ["css", "fonts"]
-            lostHelpers.forEach(item => {
-                if (module.dep[item]) {
-                    !module.dep.helpers && (module.dep["helpers"] = [])
-                    !module.dep.helpers.includes(item) && module.dep.helpers.push(item)
-                }
-            })
-            /* helpers, animations, dynamics, components */
-            const dinamicDeps = ["helpers", "animations", "dynamics", "components"]
-            await Promise.all(dinamicDeps.map(async (item) => {
-                if (!this.#JSON[item]) {
-                    this.#JSON[item] = await this.#JSON_resolve(`/framework/config/${item}.json`)
-                }
-                module.dep[item] && await this.#moduleJSON_add(module, item)
+    async #resolve_DEPS(module) {
+        const dinamicDeps = ["helpers", "animations", "dynamics", "components"]
+        await Promise.all(dinamicDeps.map(async (item) => {
+            if (!this.#JSON[item]) {
+                this.#JSON[item] = await this.#JSON_resolve(`/framework/config/${item}.json`)
+            }
+            module.dep[item] && await this.#add_JSON(module, item)
 
-            }))
-            return module
-        }
+        }))
+        return module
     }
 
-    #wrapperDependencies(module) {
+    #wrapper_DEPS(module) {
         /* wrapper fonts */
         if (module.dep?.helpers?.FONTS) {
             const originCode = { ...module.dep.helpers.FONTS }
-            const register = (fonts) => {
-                console.log(fonts, "register")
-            }
 
             module.dep.helpers.FONTS = {
-                add: ({ fonts, module }) => { /* IMPORTANTE - buena practica usar los parametros riginales del helper */
-                    originCode.add({ 'fonts': fonts, 'module': module })
-                    register(fonts, module)
+                add: async ({ fonts, module }) => { 
+                    const result = await originCode.add({ 'fonts': fonts, 'module': module })
+                    console.log(result)
+                    result.ok && registry.addGlobal({
+                        type: "fonts",
+                        item: fonts,
+                        reg: this.REGISTRY
+                    })
+                    !result.ok && this.STATE.error.push("ERROR - font lost", result.results.find(item => item.ok === false))
                 }
             }
         }
     }
 
-    #register() {
-        console.log("registro niciado")
-    }
-
     async #module_resolve(module) {
-        let moduleResolved
-        module.dep && this.#moduleDEP_validate(module)
-        !this.STATE.error.length && (moduleResolved = await this.#moduleDEPS_resolve(module))
-        this.REGISTER && this.#wrapperDependencies(module)
-        moduleResolved?.dep?.fonts && this.#injectCSS(moduleResolved, "fonts")
-        moduleResolved?.dep?.css && this.#injectCSS(moduleResolved, "css")
+        this.#validate_DEPS(module)
+        module.dep["origin"] = { ...module.dep }
+        !this.STATE.error.length && (module = await this.#resolve_DEPS(module))
+        this.#wrapper_DEPS(module)
     }
 
     /* apply styles and fonts */
-    #injectCSS(module, mode) {
+    #inject_CSS(module, mode) {
         module.dep[mode].forEach(item => {
             if (!item.name || !item.src) {
                 this.STATE.error.push(`${item} /nERROR: ${mode} format`)
             }
         })
         module.dep.helpers[mode.toUpperCase()].add({ [mode]: module.dep[mode], module: this.NAME })
+    }
+
+    #getModules = (object, obj) => {
+        Object.entries(object).forEach(([key, value]) => {
+            value[Symbol.toStringTag] === "Module" && (obj[key] = value)
+            !value[Symbol.toStringTag] && this.#getModules(value, obj)
+        })
     }
 
     /* info */
@@ -165,14 +163,13 @@ class ModuleResolver {
     async init({
         name = null,
         modules = null,
-        register = null
     }) {
         if ((this.STATE.loaded === true && !this.STATE.error.length) || this.STATE.loaded === "working") {
             console.log(this, "ModuleResolver instance already initialized", this.STATE)
             return null
         }
 
-        this.#INIT_validate(name, modules, register)
+        this.#INIT_validate(name, modules)
         if (this.STATE.error.length > 0) {
             this.initINFO()
             return null
@@ -181,21 +178,31 @@ class ModuleResolver {
         this.STATE.loaded = "working"
         this.NAME = name
         this.MODULES = modules
-        this.REGISTER = register
 
+        /* resolve modules */
         await Promise.all([
             this.#OBJECT_resolve(this.MODULES, true),
-            register && this.#register()
         ])
 
-
+        /* if errors return */
         if (this.STATE.error.length > 0) {
             this.STATE.loaded = null
             this.STATE.error.forEach(item => console.error(this, item))
             return null
         }
+
+        /* if no errors register */
+        const resolvedModules = {}
+        this.#getModules(this.MODULES, resolvedModules)
+
+        await Promise.all(Object.entries(resolvedModules).map(async ([name, module]) => {
+            module.dep?.fonts && this.#inject_CSS(module, "fonts")
+            module.dep?.css && this.#inject_CSS(module, "css")
+        }))
+
+        /* ended */
         this.STATE.loaded = true
-        return this
+        return true
     }
 }
 export default ModuleResolver

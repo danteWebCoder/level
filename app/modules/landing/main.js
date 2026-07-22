@@ -14,11 +14,11 @@ export const init = async () => {
     await landing.init({
         name: "landing",
         modules: modules,
-        register: true,
     })
 
     /* init sequence */
     console.log(landing)
+
     if (!landing.STATE.loaded) return null
     landing.MODULES.render.init()
     landing.MODULES.logic.counter.init()

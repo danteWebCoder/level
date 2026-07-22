@@ -6,7 +6,7 @@ const addLink = (item, module = null) => {
     document.head.appendChild(newLink)
 }
 
-export const add = ({
+export const add = async ({
     css = null,
     module = null
 }) => {
