@@ -1,18 +1,20 @@
 class ModuleResolver {
     NAME = null
     MODULES = {}
-    REGISTER = { LOCAL: null, GLOBAL: null }
+    REGISTER = {}
     STATE = {
         loaded: false,
         error: []
     }
 
     #JSON = {}
+    REGISTER = null
 
-    #INIT_validate(name, modules) {
-        if (!name || !modules) this.STATE.error.push("config error")
-        if (typeof name !== "string") this.STATE.error.push("config name error")
-        if (typeof modules !== "object") this.STATE.error.push("config modules error")
+    #INIT_validate(name, modules, register) {
+        if (!name || !modules || !register) this.STATE.error.push("INIT config error")
+        if (typeof name !== "string") this.STATE.error.push("INIT config name error")
+        if (typeof modules !== "object") this.STATE.error.push("INIT config modules error")
+        if (typeof register !== "boolean") this.STATE.error.push("INIT config register error")
     }
 
     /* resolves*/
@@ -105,15 +107,38 @@ class ModuleResolver {
                     this.#JSON[item] = await this.#JSON_resolve(`/framework/config/${item}.json`)
                 }
                 module.dep[item] && await this.#moduleJSON_add(module, item)
+
             }))
             return module
         }
+    }
+
+    #wrapperDependencies(module) {
+        /* wrapper fonts */
+        if (module.dep?.helpers?.FONTS) {
+            const originCode = { ...module.dep.helpers.FONTS }
+            const register = (fonts) => {
+                console.log(fonts, "register")
+            }
+
+            module.dep.helpers.FONTS = {
+                add: ({ fonts, module }) => { /* IMPORTANTE - buena practica usar los parametros riginales del helper */
+                    originCode.add({ 'fonts': fonts, 'module': module })
+                    register(fonts, module)
+                }
+            }
+        }
+    }
+
+    #register() {
+        console.log("registro niciado")
     }
 
     async #module_resolve(module) {
         let moduleResolved
         module.dep && this.#moduleDEP_validate(module)
         !this.STATE.error.length && (moduleResolved = await this.#moduleDEPS_resolve(module))
+        this.REGISTER && this.#wrapperDependencies(module)
         moduleResolved?.dep?.fonts && this.#injectCSS(moduleResolved, "fonts")
         moduleResolved?.dep?.css && this.#injectCSS(moduleResolved, "css")
     }
@@ -140,14 +165,14 @@ class ModuleResolver {
     async init({
         name = null,
         modules = null,
-        styles = null,
+        register = null
     }) {
         if ((this.STATE.loaded === true && !this.STATE.error.length) || this.STATE.loaded === "working") {
             console.log(this, "ModuleResolver instance already initialized", this.STATE)
             return null
         }
 
-        this.#INIT_validate(name, modules)
+        this.#INIT_validate(name, modules, register)
         if (this.STATE.error.length > 0) {
             this.initINFO()
             return null
@@ -156,7 +181,12 @@ class ModuleResolver {
         this.STATE.loaded = "working"
         this.NAME = name
         this.MODULES = modules
-        await this.#OBJECT_resolve(this.MODULES, true)
+        this.REGISTER = register
+
+        await Promise.all([
+            this.#OBJECT_resolve(this.MODULES, true),
+            register && this.#register()
+        ])
 
 
         if (this.STATE.error.length > 0) {

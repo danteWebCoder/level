@@ -15,7 +15,6 @@ export const add = ({
     fonts = null,
     module = null
 }) => {
-
     const formatMap = {
         woff2: "woff2",
         woff: "woff",
@@ -27,7 +26,7 @@ export const add = ({
 
     fonts.forEach((font) => {
         const previousFont = verifyExists(font)
-        
+
         if (!previousFont) {
             const ext = font.src.split(".").pop()
             const format = formatMap[ext] || ext
