@@ -1,5 +1,5 @@
 export const dep = {
-    css: [{ name: "landing", src: "/app/modules/landing/styles/main.css" }],
+    css: [{ name: "landing", src: "/app/modules/landing/styles/main.css" }, { name: "landing", src: "/app/modules/landing/styles/main.css" }],
     fonts: [
         { name: "neuropol", src: "/app/src/fonts/neuropol.otf" },
         { name: "nasa", src: "/app/src/fonts/nasalizationRG.otf" },

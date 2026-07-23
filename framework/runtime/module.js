@@ -109,11 +109,11 @@ class ModuleResolver {
 
     #wrapper_DEPS(module) {
         /* wrapper fonts */
-        if (module.dep?.helpers?.FONTS) {
+        if (module.dep.helpers?.FONTS) {
             const originCode = { ...module.dep.helpers.FONTS }
 
             module.dep.helpers.FONTS = {
-                add: async ({ fonts, module }) => { 
+                add: async ({ fonts, module }) => {
                     const result = await originCode.add({ 'fonts': fonts, 'module': module })
                     console.log(result)
                     result.ok && registry.addGlobal({
@@ -122,6 +122,23 @@ class ModuleResolver {
                         reg: this.REGISTRY
                     })
                     !result.ok && this.STATE.error.push("ERROR - font lost", result.results.find(item => item.ok === false))
+                }
+            }
+        }
+        /* wrapper css */
+        if (module.dep.helpers?.CSS) {
+            const originCode = { ...module.dep.helpers.CSS }
+
+            module.dep.helpers.CSS = {
+                add: async ({ css, module }) => {
+                    const result = await originCode.add({ 'css': css, 'module': module })
+                    console.log(result)
+                    result.ok && registry.addGlobal({
+                        type: "css",
+                        item: css,
+                        reg: this.REGISTRY
+                    })
+                    !result.ok && this.STATE.error.push("ERROR - css lost", result.results.find(item => item.ok === false))
                 }
             }
         }
