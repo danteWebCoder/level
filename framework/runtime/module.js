@@ -58,7 +58,7 @@ class ModuleResolver {
                 if (value.endsWith(".json")) object[key] = await this.#JSON_resolve(value)
                 if (value.endsWith(".js")) {
                     const module = object[key] = await this.#URL_resolve(value)
-                    if (typeModule && module.dep) await this.#module_resolve(module)
+                    if (typeModule && module?.dep) await this.#module_resolve(module)
                 }
             }
             if (typeof value === "object" && value !== null) {
@@ -115,11 +115,9 @@ class ModuleResolver {
             module.dep.helpers.FONTS = {
                 add: async ({ fonts, module }) => {
                     const result = await originCode.add({ 'fonts': fonts, 'module': module })
-                    console.log(result)
                     result.ok && registry.addGlobal({
                         type: "fonts",
                         item: fonts,
-                        reg: this.REGISTRY
                     })
                     !result.ok && this.STATE.error.push("ERROR - font lost", result.results.find(item => item.ok === false))
                 }
@@ -132,11 +130,9 @@ class ModuleResolver {
             module.dep.helpers.CSS = {
                 add: async ({ css, module }) => {
                     const result = await originCode.add({ 'css': css, 'module': module })
-                    console.log(result)
                     result.ok && registry.addGlobal({
                         type: "css",
                         item: css,
-                        reg: this.REGISTRY
                     })
                     !result.ok && this.STATE.error.push("ERROR - css lost", result.results.find(item => item.ok === false))
                 }
@@ -172,7 +168,43 @@ class ModuleResolver {
     initINFO() {
         console.info(this, `\nMODULERESOLVER {
             init ({
+                name: "module_name", ---------- STRING - simple string name without spaces
+                modules: modules_name, -------- OBJECT - nested objects
 
+                example: 
+
+                { render: path, logic: path }
+
+                { render: path, logic: { logic1: path, logic2: path } }
+
+                { render: { ... }, logic: { ... , subLogic: { ... } } }
+
+
+                you can use it: (after import moduleResolver)
+
+                const imTheBest = new moduleResolver()
+                imTheBest = AWAIT module.init({
+                    name: "myModule", 
+                    modules: {
+                        render: {
+                            script1: "url...",
+                            script2: "url..."
+                        },
+                        logic: {
+                            script1: "url...",
+                            script2: "url...",
+                            script3: "url..."
+                        }
+                    }
+                })
+
+                if (imTheBest.STATE.loaded) {
+                    imTheBest.MODULES.render.script1.someFuntion()
+                    ...
+                }
+
+                console.info(imTheBest) for see the structure
+                simply !!!
             })
         }`)
     }
@@ -203,7 +235,7 @@ class ModuleResolver {
 
         /* if errors return */
         if (this.STATE.error.length > 0) {
-            this.STATE.loaded = null
+            this.STATE.loaded = false
             this.STATE.error.forEach(item => console.error(this, item))
             return null
         }
@@ -219,7 +251,7 @@ class ModuleResolver {
 
         /* ended */
         this.STATE.loaded = true
-        return true
+        return this
     }
 }
 export default ModuleResolver

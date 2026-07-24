@@ -7,7 +7,9 @@ class Registry {
         type = null,
         item = null
     }) {
-
+        if (type === "fonts") {
+            console.log(item)
+        }
     }
 
     addLocal({
